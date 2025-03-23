@@ -1,33 +1,29 @@
 import React, { useState } from 'react';
 import '@fontsource/poppins';
 
-const Cadastro3 = () => {
+const CadastroIdoso3 = () => {
   const [fotoPerfil, setFotoPerfil] = useState(null);
-  const [experiencias, setExperiencias] = useState('');
-  const [arquivosExperiencia, setArquivosExperiencia] = useState([]);
-  const [metodos, setMetodos] = useState('');
-  const [arquivosMetodos, setArquivosMetodos] = useState([]);
+  const [desafios, setDesafios] = useState('');
+  const [saude, setSaude] = useState('');
+  const [arquivosSaude, setArquivosSaude] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({
       fotoPerfil,
-      experiencias,
-      arquivosExperiencia,
-      metodos,
-      arquivosMetodos
+      desafios,
+      saude,
+      arquivosSaude
     });
-    // Aqui você pode enviar os dados para o backend
-    alert("Cadastro finalizado com sucesso!");
+    alert("Cadastro do idoso finalizado com sucesso!");
   };
 
   return (
-    
     <div style={styles.container}>
+      <h1 style={styles.titulo}>Cadastro - Etapa 3</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
-        {/* Foto de perfil */}
-
         
+        {/* Foto de perfil */}
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>
             <div style={styles.circulo}>
@@ -44,28 +40,21 @@ const Cadastro3 = () => {
           />
         </div>
 
-        {/* Experiências */}
+        {/* Desafios */}
         <textarea
-          placeholder="Descreva suas experiências de trabalho"
-          value={experiencias}
-          onChange={(e) => setExperiencias(e.target.value)}
+          placeholder="Descreva os principais desafios que você enfrenta no dia a dia"
+          value={desafios}
+          onChange={(e) => setDesafios(e.target.value)}
           style={styles.textarea}
           required
-        />
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx"
-          multiple
-          onChange={(e) => setArquivosExperiencia(e.target.files)}
-          style={styles.inputArquivo}
         />
 
-        {/* Métodos de tratamento */}
-        <label style={styles.label}>Métodos de tratamento</label>
+        {/* Observações sobre saúde */}
+        <label style={styles.label}>Adicione observações sobre sua saúde:</label>
         <textarea
-          placeholder="Descreva seu método de trabalho..."
-          value={metodos}
-          onChange={(e) => setMetodos(e.target.value)}
+          placeholder="Ex: remédios, tratamentos diários, etc."
+          value={saude}
+          onChange={(e) => setSaude(e.target.value)}
           style={styles.textarea}
           required
         />
@@ -73,7 +62,7 @@ const Cadastro3 = () => {
           type="file"
           accept=".pdf,.doc,.docx"
           multiple
-          onChange={(e) => setArquivosMetodos(e.target.files)}
+          onChange={(e) => setArquivosSaude(e.target.files)}
           style={styles.inputArquivo}
         />
 
@@ -89,9 +78,16 @@ const styles = {
     fontFamily: 'Poppins, sans-serif',
     minHeight: '100vh',
     display: 'flex',
-    justifyContent: 'center',
+    flexDirection: 'column',
     alignItems: 'center',
     padding: 20,
+  },
+  titulo: {
+    color: '#87CEEB',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   form: {
     width: '100%',
@@ -113,12 +109,12 @@ const styles = {
     width: 100,
     height: 100,
     borderRadius: '50%',
-    backgroundColor: '#98FB98',
+    backgroundColor: '#EAF0FD',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 40,
-    color: '#00000',
+    color: '#FFFFF',
   },
   mais: {
     fontSize: 40,
@@ -126,12 +122,12 @@ const styles = {
   },
   adicionarTexto: {
     marginTop: 10,
-    color: '#98FB98',
+    color: '#87CEEB',
     fontWeight: 'bold',
     fontSize: 14,
   },
   textarea: {
-    backgroundColor: '#98FB98',
+    backgroundColor: '#EAF0FD',
     borderRadius: 10,
     border: 'none',
     padding: 12,
@@ -145,18 +141,19 @@ const styles = {
   label: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#98FB98',
+    color: '#87CEEB',
   },
   botao: {
-    backgroundColor: '#00FF00',
+    backgroundColor: '#87CEEB',
     border: 'none',
     borderRadius: 10,
     padding: '12px 20px',
     fontSize: 16,
-    cursor: 'pointer',
     fontWeight: 'bold',
+    color: '#fff',
+    cursor: 'pointer',
     marginTop: 10,
   }
 };
 
-export default Cadastro3;
+export default CadastroIdoso3;

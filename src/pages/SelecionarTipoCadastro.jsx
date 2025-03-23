@@ -26,7 +26,7 @@ const SelecionarTipoCadastro = () => {
       <div style={styles.inferior}>
         <button
           style={styles.botaoIdoso}
-          onClick={() => navigate('/cadastro-idoso')} // ainda será implementado
+          onClick={() => navigate('/cadastroIdoso')} // ainda será implementado
         >
           IDOSO
         </button>

@@ -80,7 +80,7 @@ const styles = {
     padding: '0 20px',
   },
   titulo: {
-    color: '#87CEEB',
+    color: '#98FB98',
     fontSize: 32,
     marginBottom: 20,
   },
@@ -91,7 +91,7 @@ const styles = {
     maxWidth: 400,
   },
   input: {
-    backgroundColor: '#EAF0FD',
+    backgroundColor: '#98FB98',
     border: 'none',
     borderRadius: 10,
     padding: '12px 20px',
@@ -99,7 +99,7 @@ const styles = {
     marginBottom: 15,
   },
   botao: {
-    backgroundColor: '#98FB98',
+    backgroundColor: '#00FF00',
     border: 'none',
     borderRadius: 10,
     padding: '12px 20px',
