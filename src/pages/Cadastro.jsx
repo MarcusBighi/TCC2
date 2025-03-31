@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CuidadorContext } from '../context/CuidadorContext';
 import '@fontsource/poppins';
 
 const Cadastro = () => {
   const navigate = useNavigate();
+  const { atualizarDadosCuidador } = useContext(CuidadorContext);
   const [formData, setFormData] = useState({
     nome: '',
     cpf: '',
@@ -18,12 +20,18 @@ const Cadastro = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    atualizarDadosCuidador(formData);
     console.log('Dados enviados:', formData);
     navigate('/cadastro2');
   };
 
   return (
     <div style={styles.container}>
+      <img
+        src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
+        alt="Logo do Aplicativo"
+        style={styles.logo}
+      />
       <h1 style={styles.titulo}>Cadastro</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <input

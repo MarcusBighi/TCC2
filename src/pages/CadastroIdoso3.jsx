@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IdosoContext } from '../context/IdosoContext';
 import '@fontsource/poppins';
 
 const CadastroIdoso3 = () => {
+  const navigate = useNavigate();
+  const { setDadosIdoso } = useContext(IdosoContext);
+
   const [fotoPerfil, setFotoPerfil] = useState(null);
   const [desafios, setDesafios] = useState('');
   const [saude, setSaude] = useState('');
@@ -9,20 +14,24 @@ const CadastroIdoso3 = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
+
+    // Salva os dados no contexto global
+    setDadosIdoso(prev => ({
+      ...prev,
       fotoPerfil,
       desafios,
-      saude,
-      arquivosSaude
-    });
+      observacoes: saude,
+      anexos: arquivosSaude && Array.from(arquivosSaude).map(arquivo => arquivo.name),
+    }));
+
     alert("Cadastro do idoso finalizado com sucesso!");
+    navigate('/visualizarPerfilIdoso'); // Redireciona para o perfil
   };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.titulo}>Cadastro - Etapa 3</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
-        
         {/* Foto de perfil */}
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>
@@ -58,6 +67,7 @@ const CadastroIdoso3 = () => {
           style={styles.textarea}
           required
         />
+
         <input
           type="file"
           accept=".pdf,.doc,.docx"
@@ -114,7 +124,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 40,
-    color: '#FFFFF',
+    color: '#0C0B55',
   },
   mais: {
     fontSize: 40,

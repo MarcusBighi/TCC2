@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CuidadorContext } from '../context/CuidadorContext';
 import '@fontsource/poppins';
 
 const Cadastro3 = () => {
+  const { atualizarDadosCuidador } = useContext(CuidadorContext);
+  const navigate = useNavigate();
+
   const [fotoPerfil, setFotoPerfil] = useState(null);
   const [experiencias, setExperiencias] = useState('');
   const [arquivosExperiencia, setArquivosExperiencia] = useState([]);
@@ -10,24 +15,27 @@ const Cadastro3 = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
+
+    const todosAnexos = [
+      ...Array.from(arquivosExperiencia).map((file) => file.name),
+      ...Array.from(arquivosMetodos).map((file) => file.name),
+    ];
+
+    atualizarDadosCuidador({
       fotoPerfil,
       experiencias,
-      arquivosExperiencia,
       metodos,
-      arquivosMetodos
+      anexos: todosAnexos,
     });
-    // Aqui você pode enviar os dados para o backend
-    alert("Cadastro finalizado com sucesso!");
+
+    // ✅ Redireciona para o perfil do cuidador
+    navigate('/visualizarPerfilCuidador');
   };
 
   return (
-    
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
         {/* Foto de perfil */}
-
-        
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>
             <div style={styles.circulo}>
@@ -45,6 +53,7 @@ const Cadastro3 = () => {
         </div>
 
         {/* Experiências */}
+        <label style={styles.label}>Experiências:</label>
         <textarea
           placeholder="Descreva suas experiências de trabalho"
           value={experiencias}
@@ -60,8 +69,8 @@ const Cadastro3 = () => {
           style={styles.inputArquivo}
         />
 
-        {/* Métodos de tratamento */}
-        <label style={styles.label}>Métodos de tratamento</label>
+        {/* Métodos */}
+        <label style={styles.label}>Métodos de Trabalho</label>
         <textarea
           placeholder="Descreva seu método de trabalho..."
           value={metodos}

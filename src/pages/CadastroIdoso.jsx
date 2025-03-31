@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IdosoContext } from '../context/IdosoContext'; // ✅ Contexto importado
 import '@fontsource/poppins';
 
 const CadastroIdoso = () => {
   const navigate = useNavigate();
+  const { setDadosIdoso } = useContext(IdosoContext); // ✅ Usando o contexto
+
   const [formData, setFormData] = useState({
     nome: '',
     endereco: '',
@@ -19,12 +22,19 @@ const CadastroIdoso = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setDadosIdoso(prev => ({ ...prev, ...formData })); // ✅ Salvando no contexto
     console.log('Etapa 1 - Idoso:', formData);
     navigate('/cadastroIdoso2');
   };
 
   return (
     <div style={styles.container}>
+      <img
+        src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
+        alt="Logo do Aplicativo"
+        style={styles.logo}
+      />
       <h1 style={styles.titulo}>Cadastro - Etapa 1</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <input type="text" name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} style={styles.input} required />
@@ -81,3 +91,4 @@ const styles = {
 };
 
 export default CadastroIdoso;
+

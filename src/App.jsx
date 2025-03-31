@@ -9,8 +9,8 @@ import SelecionarTipoCadastro from './pages/SelecionarTipoCadastro';
 import CadastroIdoso from './pages/CadastroIdoso';
 import CadastroIdoso2 from './pages/CadastroIdoso2';
 import CadastroIdoso3 from './pages/CadastroIdoso3';
-
-
+import VisualizarPerfilIdoso from './pages/VisualizarPerfilIdoso';
+import VisualizarPerfilCuidador from './pages/VisualizarPerfilCuidador';
 import "./global.css";
 
 function App() {
@@ -25,6 +25,9 @@ function App() {
       <Route path="/cadastroIdoso" element={<CadastroIdoso />} />
       <Route path="/cadastroIdoso2" element={<CadastroIdoso2 />} />
       <Route path="/cadastroIdoso3" element={<CadastroIdoso3 />} />
+      <Route path="/visualizarPerfilIdoso" element={<VisualizarPerfilIdoso />} />
+      <Route path="/visualizarPerfilCuidador" element={<VisualizarPerfilCuidador />} />
+
     </Routes>
   );
 }

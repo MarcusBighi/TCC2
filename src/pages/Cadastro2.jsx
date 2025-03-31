@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CuidadorContext } from '../context/CuidadorContext';
 import '@fontsource/poppins';
+
 
 const Cadastro2 = () => {
   const navigate = useNavigate();
+  const { atualizarDadosCuidador } = useContext(CuidadorContext);
   const [formData, setFormData] = useState({
     especialidade: '',
     telefone: '',
@@ -19,6 +22,7 @@ const Cadastro2 = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    atualizarDadosCuidador(formData);
     console.log('Dados da segunda etapa:', formData);
     navigate('/cadastro3')
     // Aqui você pode redirecionar para uma tela de confirmação ou próxima etapa
@@ -27,6 +31,11 @@ const Cadastro2 = () => {
 
   return (
     <div style={styles.container}>
+      <img
+        src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
+        alt="Logo do Aplicativo"
+        style={styles.logo}
+      />
       <h1 style={styles.titulo}>Cadastro - Etapa 2</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <input

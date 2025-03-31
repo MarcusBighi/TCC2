@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IdosoContext } from '../context/IdosoContext'; // ✅ Import do contexto
 import '@fontsource/poppins';
 
 const CadastroIdoso2 = () => {
-
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { setDadosIdoso } = useContext(IdosoContext); // ✅ Acesso ao context
 
   const [formData, setFormData] = useState({
     nomeContato: '',
@@ -20,19 +21,57 @@ const CadastroIdoso2 = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setDadosIdoso(prev => ({ ...prev, ...formData })); // ✅ Salvando no contexto
     console.log('Etapa 2 - Idoso:', formData);
-    navigate('/cadastroIdoso3')
-    // Aqui você pode redirecionar ou enviar dados para o backend
+    navigate('/cadastroIdoso3');
   };
 
   return (
     <div style={styles.container}>
+      <img
+        src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
+        alt="Logo do Aplicativo"
+        style={styles.logo}
+      />
       <h1 style={styles.titulo}>Cadastro - Etapa 2</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
-        <input type="text" name="nomeContato" placeholder="Nome do contato de emergência" value={formData.nomeContato} onChange={handleChange} style={styles.input} required />
-        <input type="text" name="enderecoResponsavel" placeholder="Endereço do responsável" value={formData.enderecoResponsavel} onChange={handleChange} style={styles.input} required />
-        <input type="password" name="senha" placeholder="Senha" value={formData.senha} onChange={handleChange} style={styles.input} required />
-        <input type="password" name="confirmarSenha" placeholder="Confirmar Senha" value={formData.confirmarSenha} onChange={handleChange} style={styles.input} required />
+        <input
+          type="text"
+          name="nomeContato"
+          placeholder="Nome do contato de emergência"
+          value={formData.nomeContato}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="text"
+          name="enderecoResponsavel"
+          placeholder="Endereço do responsável"
+          value={formData.enderecoResponsavel}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="password"
+          name="senha"
+          placeholder="Senha"
+          value={formData.senha}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="password"
+          name="confirmarSenha"
+          placeholder="Confirmar Senha"
+          value={formData.confirmarSenha}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
         <button type="submit" style={styles.botao}>PRÓXIMO</button>
       </form>
     </div>
