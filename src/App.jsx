@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TelaInicial from "./TelaInicial";
 import Login from "./pages/Login"; // crie esse componente depois
 import Cadastro from "./pages/Cadastro"; // crie esse também
@@ -11,10 +11,13 @@ import CadastroIdoso2 from './pages/CadastroIdoso2';
 import CadastroIdoso3 from './pages/CadastroIdoso3';
 import VisualizarPerfilIdoso from './pages/VisualizarPerfilIdoso';
 import VisualizarPerfilCuidador from './pages/VisualizarPerfilCuidador';
-import "./global.css";
+import Chat from './pages/Chat';
+import ChatCuidadorIdoso from './pages/ChatCuidadorIdoso';
+import "./index.css";
 
 function App() {
   return (
+    
     <Routes>
       <Route path="/" element={<TelaInicial />} />
       <Route path="/login" element={<Login />} />
@@ -27,8 +30,10 @@ function App() {
       <Route path="/cadastroIdoso3" element={<CadastroIdoso3 />} />
       <Route path="/visualizarPerfilIdoso" element={<VisualizarPerfilIdoso />} />
       <Route path="/visualizarPerfilCuidador" element={<VisualizarPerfilCuidador />} />
+      <Route path="/chat" element={<Chat />} />
+      <Route path="/ChatCuidadorIdoso" element={<ChatCuidadorIdoso />} />
 
-    </Routes>
+      </Routes>
   );
 }
 

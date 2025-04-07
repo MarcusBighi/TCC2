@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CuidadorContext } from '../context/CuidadorContext';
 import { FaFolder } from 'react-icons/fa'; // Ícone de pasta
 
 const VisualizarPerfilCuidador = () => {
   const { dadosCuidador } = useContext(CuidadorContext);
+  const navigate = useNavigate();
   const [previewFoto, setPreviewFoto] = useState(
     dadosCuidador.fotoPerfil ? URL.createObjectURL(dadosCuidador.fotoPerfil) : null
   );
@@ -13,6 +15,10 @@ const VisualizarPerfilCuidador = () => {
     if (file) {
       setPreviewFoto(URL.createObjectURL(file));
     }
+  };
+
+  const irParaChat = () => {
+    navigate('/chat');
   };
 
   return (
@@ -97,7 +103,9 @@ const VisualizarPerfilCuidador = () => {
         </div>
 
         <div style={styles.enviarMensagemContainer}>
-          <button style={styles.enviarMensagemBotao}>Enviar Mensagem</button>
+          <button style={styles.enviarMensagemBotao} onClick={irParaChat}>
+            Enviar Mensagem
+          </button>
         </div>
       </div>
     </div>
@@ -121,7 +129,7 @@ const styles = {
     maxWidth: 500,
     width: '100%',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-    color: '#32CD32', // ✅ cor dos textos
+    color: '#32CD32',
   },
   titulo: {
     fontSize: 22,
@@ -141,7 +149,7 @@ const styles = {
     height: 100,
     borderRadius: '50%',
     backgroundColor: '#fff',
-    border: '4px solid #98FB98', // ✅ cor da borda
+    border: '4px solid #98FB98',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

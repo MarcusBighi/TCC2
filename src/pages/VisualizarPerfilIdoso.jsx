@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { IdosoContext } from '../context/IdosoContext';
+import { useNavigate } from 'react-router-dom'; // ✅ Importar o useNavigate
 
 const VisualizarPerfilIdoso = () => {
   const { dadosIdoso } = useContext(IdosoContext);
+  const navigate = useNavigate(); // ✅ Hook de navegação
   const [previewFoto, setPreviewFoto] = useState(
     dadosIdoso.fotoPerfil ? URL.createObjectURL(dadosIdoso.fotoPerfil) : null
   );
@@ -21,7 +23,6 @@ const VisualizarPerfilIdoso = () => {
       <div style={styles.card}>
         <h1 style={styles.titulo}>Perfil do Idoso</h1>
 
-        {/* Círculo com preview ou "+" */}
         <div style={styles.fotoContainer}>
           <label htmlFor="fotoUpload" style={styles.circulo}>
             {previewFoto ? (
@@ -39,59 +40,55 @@ const VisualizarPerfilIdoso = () => {
           </label>
         </div>
 
-        {/* Dados em pares lado a lado com valor embaixo do título */}
-<div style={styles.linha}>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Nome:</p>
-    <p style={styles.valor}>{dadosIdoso.nome}</p>
-  </div>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Endereço:</p>
-    <p style={styles.valor}>{dadosIdoso.endereco}</p>
-  </div>
-</div>
+        <div style={styles.linha}>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Nome:</p>
+            <p style={styles.valor}>{dadosIdoso.nome}</p>
+          </div>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Endereço:</p>
+            <p style={styles.valor}>{dadosIdoso.endereco}</p>
+          </div>
+        </div>
 
-<div style={styles.linha}>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Idade:</p>
-    <p style={styles.valor}>{dadosIdoso.idade}</p>
-  </div>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Telefone:</p>
-    <p style={styles.valor}>{dadosIdoso.telefone}</p>
-  </div>
-</div>
+        <div style={styles.linha}>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Idade:</p>
+            <p style={styles.valor}>{dadosIdoso.idade}</p>
+          </div>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Telefone:</p>
+            <p style={styles.valor}>{dadosIdoso.telefone}</p>
+          </div>
+        </div>
 
-<div style={styles.linha}>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Endereço do responsável:</p>
-    <p style={styles.valor}>{dadosIdoso.enderecoResponsavel}</p>
-  </div>
-  <div style={styles.coluna}>
-    <p style={styles.label}>Telefone de emergência:</p>
-    <p style={styles.valor}>{dadosIdoso.telefoneEmergencia}</p>
+        <div style={styles.linha}>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Endereço do responsável:</p>
+            <p style={styles.valor}>{dadosIdoso.enderecoResponsavel}</p>
+          </div>
+          <div style={styles.coluna}>
+            <p style={styles.label}>Telefone de emergência:</p>
+            <p style={styles.valor}>{dadosIdoso.telefoneEmergencia}</p>
 
-    {dadosIdoso.telefoneEmergencia && (
-      <a href={`tel:${telefoneEmergencia}`} style={styles.botaoContato}>
-        Entrar em Contato
-      </a>
-    )}
-  </div>
-</div>
+            {dadosIdoso.telefoneEmergencia && (
+              <a href={`tel:${telefoneEmergencia}`} style={styles.botaoContato}>
+                Entrar em Contato
+              </a>
+            )}
+          </div>
+        </div>
 
-        {/* Desafios */}
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Desafios do cotidiano</h2>
           <p>{dadosIdoso.desafios}</p>
         </div>
 
-        {/* Saúde */}
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Observações sobre saúde</h2>
           <p>{dadosIdoso.observacoes}</p>
         </div>
 
-        {/* Anexos */}
         {dadosIdoso.anexos?.length > 0 && (
           <div style={styles.secao}>
             <h2 style={styles.subtitulo}>Exames:</h2>
@@ -103,8 +100,14 @@ const VisualizarPerfilIdoso = () => {
           </div>
         )}
 
+        {/* ✅ Botão com redirecionamento */}
         <div style={styles.enviarMensagemContainer}>
-          <button style={styles.enviarMensagemBotao}>Enviar Mensagem</button>
+          <button
+            style={styles.enviarMensagemBotao}
+            onClick={() => navigate('/ChatCuidadorIdoso')}
+          >
+            Enviar Mensagem
+          </button>
         </div>
 
       </div>
@@ -171,6 +174,14 @@ const styles = {
     fontSize: 14,
     lineHeight: 1.5,
   },
+  label: {
+    fontWeight: 600,
+    color: '#0C0B55',
+    marginBottom: 4,
+  },
+  valor: {
+    color: '#000',
+  },
   secao: {
     marginTop: 20,
   },
@@ -200,13 +211,11 @@ const styles = {
     fontWeight: '600',
     fontSize: 14,
   },
-
   enviarMensagemContainer: {
     display: 'flex',
     justifyContent: 'center',
     marginTop: 20,
   },
-  
   enviarMensagemBotao: {
     backgroundColor: '#87CEEB',
     color: '#fff',
@@ -218,10 +227,10 @@ const styles = {
     cursor: 'pointer',
     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
   },
-  
 };
 
 export default VisualizarPerfilIdoso;
+
 
 
 
