@@ -55,6 +55,15 @@ const CadastroIdoso2 = () => {
           required
         />
         <input
+          type="email"
+          name="email"
+          placeholder="E-mail"
+          value={formData.email}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
           type="password"
           name="senha"
           placeholder="Senha"
@@ -72,6 +81,7 @@ const CadastroIdoso2 = () => {
           style={styles.input}
           required
         />
+
         <button type="submit" style={styles.botao}>PRÓXIMO</button>
       </form>
     </div>

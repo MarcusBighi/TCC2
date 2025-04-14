@@ -1,5 +1,6 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {Routes, Route } from "react-router-dom";
+import { IdosoProvider } from './context/IdosoContext';
 import TelaInicial from "./TelaInicial";
 import Login from "./pages/Login"; // crie esse componente depois
 import Cadastro from "./pages/Cadastro"; // crie esse também
@@ -13,11 +14,16 @@ import VisualizarPerfilIdoso from './pages/VisualizarPerfilIdoso';
 import VisualizarPerfilCuidador from './pages/VisualizarPerfilCuidador';
 import Chat from './pages/Chat';
 import ChatCuidadorIdoso from './pages/ChatCuidadorIdoso';
+import PerfilIdoso from './pages/PerfilIdoso';
+import EditarPerfilIdoso from "./pages/EditarPerfilIdoso";
+import PerfilCuidador from './pages/PerfilCuidador';
+import EditarPerfilCuidador from "./pages/EditarPerfilCuidador";
 import "./index.css";
 
 function App() {
   return (
-    
+  
+    <IdosoProvider> 
     <Routes>
       <Route path="/" element={<TelaInicial />} />
       <Route path="/login" element={<Login />} />
@@ -32,8 +38,12 @@ function App() {
       <Route path="/visualizarPerfilCuidador" element={<VisualizarPerfilCuidador />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/ChatCuidadorIdoso" element={<ChatCuidadorIdoso />} />
-
+      <Route path="/perfilIdoso" element={<PerfilIdoso />} />
+      <Route path="/EditarPerfilIdoso" element={<EditarPerfilIdoso />} />
+      <Route path="/perfilCuidador" element={<PerfilCuidador />} />
+      <Route path="/EditarPerfilCuidador" element={<EditarPerfilCuidador />} />
       </Routes>
+      </IdosoProvider>
   );
 }
 

@@ -122,7 +122,6 @@ const Chat = () => {
         </label>
         <button onClick={handleEnviar} style={styles.enviar}>Enviar</button>
       </div>
-
       <div style={styles.navBar}>
         <FiHome size={24} color="#0C0B55" />
         <FiMessageSquare size={24} color="#0C0B55" />

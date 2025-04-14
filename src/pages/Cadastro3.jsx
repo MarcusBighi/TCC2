@@ -29,7 +29,7 @@ const Cadastro3 = () => {
     });
 
     // ✅ Redireciona para o perfil do cuidador
-    navigate('/visualizarPerfilCuidador');
+    navigate('/PerfilCuidador');
   };
 
   return (

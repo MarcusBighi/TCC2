@@ -25,7 +25,7 @@ const CadastroIdoso3 = () => {
     }));
 
     alert("Cadastro do idoso finalizado com sucesso!");
-    navigate('/visualizarPerfilIdoso'); // Redireciona para o perfil
+    navigate('/PerfilIdoso'); // Redireciona para o perfil
   };
 
   return (
