@@ -18,6 +18,10 @@ import PerfilIdoso from './pages/PerfilIdoso';
 import EditarPerfilIdoso from "./pages/EditarPerfilIdoso";
 import PerfilCuidador from './pages/PerfilCuidador';
 import EditarPerfilCuidador from "./pages/EditarPerfilCuidador";
+import Home from './pages/Home';
+import HomeIdoso from './pages/HomeIdoso';
+import HistoricoChatIdoso from './pages/HistoricoChatIdoso';
+import HistoricoChatCuidador from './pages/HistoricoChatCuidador';
 import "./index.css";
 
 function App() {
@@ -42,6 +46,10 @@ function App() {
       <Route path="/EditarPerfilIdoso" element={<EditarPerfilIdoso />} />
       <Route path="/perfilCuidador" element={<PerfilCuidador />} />
       <Route path="/EditarPerfilCuidador" element={<EditarPerfilCuidador />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/homeIdoso" element={<HomeIdoso />} />
+      <Route path="/historicoChatIdoso" element={<HistoricoChatIdoso />} />
+      <Route path="/historicoChatCuidador" element={<HistoricoChatCuidador />} />
       </Routes>
       </IdosoProvider>
   );

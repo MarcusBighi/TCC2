@@ -61,6 +61,14 @@ const Cadastro = () => {
           style={styles.input}
           required
         />
+        <input 
+        type="text" 
+        name="endereco" 
+        placeholder="Endereço" 
+        value={formData.endereco} 
+        onChange={handleChange} 
+        style={styles.input} required 
+        />
         <input
           type="text"
           name="formacao"

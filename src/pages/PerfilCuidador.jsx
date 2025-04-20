@@ -29,6 +29,7 @@ const PerfilCuidador = () => {
         <p><strong>Nome:</strong> {dadosCuidador.nome}</p>
         <p><strong>CPF:</strong> {dadosCuidador.cpf}</p>
         <p><strong>Idade:</strong> {dadosCuidador.idade}</p>
+        <p><strong>Endereço:</strong> {dadosCuidador.endereco}</p>
         <p><strong>Formação:</strong> {dadosCuidador.formacao}</p>
         <p><strong>Especialidade:</strong> {dadosCuidador.especialidade}</p>
         <p><strong>Telefone:</strong> {dadosCuidador.telefone}</p>
@@ -61,8 +62,8 @@ const PerfilCuidador = () => {
       </div>
 
       <div style={styles.navBar}>
-      <FiHome size={24} color="#0C0B55" />
-      <FiMessageSquare size={24} color="#0C0B55" />
+      <FiHome size={24} onClick={() => navigate('/homeIdoso')} color="#0C0B55" />
+      <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} color="#0C0B55" />
       <FiUser size={24} color="#0C0B55" />
     </div>
     </div>

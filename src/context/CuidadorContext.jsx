@@ -7,6 +7,7 @@ export const CuidadorProvider = ({ children }) => {
     nome: '',
     cpf: '',
     idade: '',
+    endereco: '',
     formacao: '',
     especialidade: '',
     telefone: '',
