@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CuidadorContext } from '../context/CuidadorContext';
+import axios from 'axios';
 import '@fontsource/poppins';
 
 const Cadastro3 = () => {
@@ -12,8 +13,9 @@ const Cadastro3 = () => {
   const [arquivosExperiencia, setArquivosExperiencia] = useState([]);
   const [metodos, setMetodos] = useState('');
   const [arquivosMetodos, setArquivosMetodos] = useState([]);
+  const [disponibilidade, setDisponibilidade] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const todosAnexos = [
@@ -21,21 +23,29 @@ const Cadastro3 = () => {
       ...Array.from(arquivosMetodos).map((file) => file.name),
     ];
 
-    atualizarDadosCuidador({
-      fotoPerfil,
+    const dados = {
+      fotoPerfil: fotoPerfil?.name || null,
       experiencias,
       metodos,
+      disponibilidade,
       anexos: todosAnexos,
-    });
+    };
 
-    // ✅ Redireciona para o perfil do cuidador
-    navigate('/PerfilCuidador');
+    atualizarDadosCuidador(dados);
+
+    try {
+      await axios.post('http://localhost:5000/cadastro/cuidador', dados);
+      alert("Cadastro do cuidador finalizado com sucesso!");
+      navigate('/PerfilCuidador');
+    } catch (error) {
+      console.error("Erro ao enviar dados do cuidador:", error);
+      alert("Erro ao finalizar cadastro.");
+    }
   };
 
   return (
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        {/* Foto de perfil */}
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>
             <div style={styles.circulo}>
@@ -52,7 +62,6 @@ const Cadastro3 = () => {
           />
         </div>
 
-        {/* Experiências */}
         <label style={styles.label}>Experiências:</label>
         <textarea
           placeholder="Descreva suas experiências de trabalho"
@@ -69,7 +78,6 @@ const Cadastro3 = () => {
           style={styles.inputArquivo}
         />
 
-        {/* Métodos */}
         <label style={styles.label}>Métodos de Trabalho</label>
         <textarea
           placeholder="Descreva seu método de trabalho..."
@@ -84,6 +92,15 @@ const Cadastro3 = () => {
           multiple
           onChange={(e) => setArquivosMetodos(e.target.files)}
           style={styles.inputArquivo}
+        />
+
+        <label style={styles.label}>Disponibilidade</label>
+        <textarea
+          placeholder="Informe seus horários e dias disponíveis..."
+          value={disponibilidade}
+          onChange={(e) => setDisponibilidade(e.target.value)}
+          style={styles.textarea}
+          required
         />
 
         <button type="submit" style={styles.botao}>Finalizar Cadastro</button>
@@ -169,3 +186,5 @@ const styles = {
 };
 
 export default Cadastro3;
+
+

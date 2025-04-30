@@ -3,7 +3,6 @@ import { CuidadorContext } from '../context/CuidadorContext';
 import { useNavigate } from 'react-router-dom';
 import { FiHome, FiMessageSquare, FiUser } from 'react-icons/fi';
 
-
 const PerfilCuidador = () => {
   const { dadosCuidador } = useContext(CuidadorContext);
   const navigate = useNavigate();
@@ -26,14 +25,15 @@ const PerfilCuidador = () => {
           </label>
         </div>
 
+        <p><strong>CPF:</strong> {dadosCuidador.cpf}</p>    
         <p><strong>Nome:</strong> {dadosCuidador.nome}</p>
-        <p><strong>CPF:</strong> {dadosCuidador.cpf}</p>
         <p><strong>Idade:</strong> {dadosCuidador.idade}</p>
+        <p><strong>E-mail:</strong> {dadosCuidador.email}</p>
+        <p><strong>Telefone:</strong> {dadosCuidador.telefone}</p>
         <p><strong>Endereço:</strong> {dadosCuidador.endereco}</p>
         <p><strong>Formação:</strong> {dadosCuidador.formacao}</p>
         <p><strong>Especialidade:</strong> {dadosCuidador.especialidade}</p>
-        <p><strong>Telefone:</strong> {dadosCuidador.telefone}</p>
-        <p><strong>E-mail:</strong> {dadosCuidador.email}</p>
+
 
         <div style={styles.secao}>
           <h2>Experiências</h2>
@@ -43,6 +43,11 @@ const PerfilCuidador = () => {
         <div style={styles.secao}>
           <h2>Métodos de Trabalho</h2>
           <p>{dadosCuidador.metodos}</p>
+        </div>
+
+        <div style={styles.secao}>
+          <h2>Disponibilidade</h2>
+          <p>{dadosCuidador.disponibilidade}</p> {/* <-- adicionado aqui */}
         </div>
 
         {dadosCuidador.anexos?.length > 0 && (
@@ -62,10 +67,10 @@ const PerfilCuidador = () => {
       </div>
 
       <div style={styles.navBar}>
-      <FiHome size={24} onClick={() => navigate('/homeIdoso')} color="#0C0B55" />
-      <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} color="#0C0B55" />
-      <FiUser size={24} color="#0C0B55" />
-    </div>
+        <FiHome size={24} onClick={() => navigate('/homeIdoso')} color="#0C0B55" />
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} color="#0C0B55" />
+        <FiUser size={24} color="#0C0B55" />
+      </div>
     </div>
   );
 };
@@ -134,7 +139,6 @@ const styles = {
     fontWeight: 'bold',
     cursor: 'pointer',
   },
-
   navBar: {
     backgroundColor: '#fff',
     padding: '10px 20px',
@@ -149,3 +153,4 @@ const styles = {
 };
 
 export default PerfilCuidador;
+

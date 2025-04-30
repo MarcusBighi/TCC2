@@ -10,6 +10,7 @@ const CadastroIdoso2 = () => {
   const [formData, setFormData] = useState({
     nomeContato: '',
     enderecoResponsavel: '',
+    email: '',
     senha: '',
     confirmarSenha: '',
   });

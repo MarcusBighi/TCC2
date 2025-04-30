@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiX, FiCheck, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi'; // FiCheck no lugar de FiHeart
+import { FiX, FiCheck, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi';
 
 const mockPessoas = [
   {
@@ -11,7 +11,7 @@ const mockPessoas = [
     foto: 'https://i.pravatar.cc/300?img=1',
     formacao: 'Enfermagem - UFES',
     especialidade: 'Cuidados Paliativos',
-    telefone: '(27) 99999-0001',
+    disponibilidade: 'Diária', // <-- adicionado
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const mockPessoas = [
     foto: 'https://i.pravatar.cc/300?img=2',
     formacao: 'Fisioterapia - UVV',
     especialidade: 'Reabilitação Física',
-    telefone: '(27) 99999-0002',
+    disponibilidade: '3 vezes na semana', // <-- adicionado
   },
 ];
 
@@ -53,7 +53,7 @@ const Home = () => {
                 <div style={styles.detalhes}>
                   <p><strong>Formação:</strong> {pessoa.formacao}</p>
                   <p><strong>Especialidade:</strong> {pessoa.especialidade}</p>
-                  <p><strong>Contato:</strong> {pessoa.telefone}</p>
+                  <p><strong>Disponibilidade:</strong> {pessoa.disponibilidade}</p> {/* <-- trocado */}
                 </div>
                 <button style={styles.botaoInfo} onClick={verMais}>
                   + Info
@@ -74,10 +74,10 @@ const Home = () => {
       </div>
 
       <div style={styles.navbar}>
-  <FiHome size={24} />
-  <FiMessageSquare size={24} onClick={() => navigate('/historicoChatIdoso')} />
-  <FiUser size={24} />
-</div>
+        <FiHome size={24} />
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatIdoso')} />
+        <FiUser size={24} />
+      </div>
     </div>
   );
 };
@@ -198,4 +198,5 @@ const styles = {
 };
 
 export default Home;
+
 

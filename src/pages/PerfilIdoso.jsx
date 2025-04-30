@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { IdosoContext } from '../context/IdosoContext';
 import { useNavigate } from 'react-router-dom';
 import { FiHome, FiMessageSquare, FiUser } from 'react-icons/fi';
@@ -6,14 +6,28 @@ import { FiHome, FiMessageSquare, FiUser } from 'react-icons/fi';
 const PerfilIdoso = () => {
   const { dadosIdoso } = useContext(IdosoContext);
   const navigate = useNavigate();
-  const [previewFoto, setPreviewFoto] = useState(
-    dadosIdoso.fotoPerfil ? URL.createObjectURL(dadosIdoso.fotoPerfil) : null
-  );
+  const [previewFoto, setPreviewFoto] = useState(null);
+
+  useEffect(() => {
+    // Só tenta criar uma URL se for um objeto File
+    if (dadosIdoso.fotoPerfil instanceof File) {
+      const url = URL.createObjectURL(dadosIdoso.fotoPerfil);
+      setPreviewFoto(url);
+
+      return () => URL.revokeObjectURL(url); // limpeza
+    }
+
+    // Se for string (nome do arquivo), você pode carregar de um caminho estático ou remoto
+    if (typeof dadosIdoso.fotoPerfil === 'string') {
+      setPreviewFoto(`/uploads/${dadosIdoso.fotoPerfil}`); // ajuste conforme seu backend
+    }
+  }, [dadosIdoso.fotoPerfil]);
 
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPreviewFoto(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      setPreviewFoto(url);
     }
   };
 
@@ -101,7 +115,6 @@ const PerfilIdoso = () => {
           </div>
         )}
 
-        {/* Botão de editar perfil */}
         <div style={styles.enviarMensagemContainer}>
           <button
             style={styles.enviarMensagemBotao}

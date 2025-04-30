@@ -1,38 +1,45 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IdosoContext } from '../context/IdosoContext';
+import axios from 'axios';
 import '@fontsource/poppins';
 
 const CadastroIdoso3 = () => {
   const navigate = useNavigate();
-  const { setDadosIdoso } = useContext(IdosoContext);
+  const { dadosIdoso, setDadosIdoso } = useContext(IdosoContext);
 
-  const [fotoPerfil, setFotoPerfil] = useState(null);
+  const [fotoPerfil, setFotoPerfil] = useState('');
   const [desafios, setDesafios] = useState('');
   const [saude, setSaude] = useState('');
   const [arquivosSaude, setArquivosSaude] = useState([]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Salva os dados no contexto global
-    setDadosIdoso(prev => ({
-      ...prev,
-      fotoPerfil,
+    const etapa3 = {
+      fotoPerfil: fotoPerfil?.name || null,
       desafios,
       observacoes: saude,
-      anexos: arquivosSaude && Array.from(arquivosSaude).map(arquivo => arquivo.name),
-    }));
+      anexos: arquivosSaude && Array.from(arquivosSaude).map((arquivo) => arquivo.name),
+    };
 
-    alert("Cadastro do idoso finalizado com sucesso!");
-    navigate('/PerfilIdoso'); // Redireciona para o perfil
+    const dadosCompletos = { ...dadosIdoso, ...etapa3 };
+    setDadosIdoso(dadosCompletos);
+
+    try {
+      await axios.post('http://localhost:5000/api/idosos', dadosCompletos);
+      alert("Cadastro do idoso finalizado com sucesso!");
+      navigate('/PerfilIdoso');
+    } catch (error) {
+      console.error("Erro ao enviar dados do idoso:", error);
+      alert("Erro ao finalizar cadastro.");
+    }
   };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.titulo}>Cadastro - Etapa 3</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
-        {/* Foto de perfil */}
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>
             <div style={styles.circulo}>
@@ -49,7 +56,6 @@ const CadastroIdoso3 = () => {
           />
         </div>
 
-        {/* Desafios */}
         <textarea
           placeholder="Descreva os principais desafios que você enfrenta no dia a dia"
           value={desafios}
@@ -58,7 +64,6 @@ const CadastroIdoso3 = () => {
           required
         />
 
-        {/* Observações sobre saúde */}
         <label style={styles.label}>Adicione observações sobre sua saúde:</label>
         <textarea
           placeholder="Ex: remédios, tratamentos diários, etc."
@@ -167,3 +172,4 @@ const styles = {
 };
 
 export default CadastroIdoso3;
+

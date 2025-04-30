@@ -17,6 +17,7 @@ export const CuidadorProvider = ({ children }) => {
     fotoPerfil: null,
     experiencias: '',
     metodos: '',
+    disponibilidade: '', // <-- adicionado aqui
     anexos: [],
   });
 
