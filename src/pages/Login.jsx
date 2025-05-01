@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import '@fontsource/poppins';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     senha: '',
@@ -12,11 +15,32 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login enviado:', formData);
-    // Adicione a navegação ou lógica de autenticação aqui
+  
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      console.log('Login sucesso:', response.data);
+  
+      // Salvar token no localStorage ou contexto
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('tipoUsuario', response.data.tipo);
+      localStorage.setItem('idUsuario', response.data.usuario.id);
+  
+      alert(`Bem-vindo, ${response.data.usuario.nome}!`);
+  
+      // Redirecionar conforme o tipo de usuário
+      if (response.data.tipo === 'cuidador') {
+        navigate('/PerfilCuidador');
+      } else {
+        navigate('/PerfilIdoso');
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert(error.response?.data?.message || "Erro ao fazer login.");
+    }
   };
+  
 
   return (
     <div style={styles.container}>

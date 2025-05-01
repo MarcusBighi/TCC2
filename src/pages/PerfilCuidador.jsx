@@ -1,14 +1,42 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { CuidadorContext } from '../context/CuidadorContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiHome, FiMessageSquare, FiUser } from 'react-icons/fi';
 
 const PerfilCuidador = () => {
+  const [perfil, setPerfil] = useState(null);
   const { dadosCuidador } = useContext(CuidadorContext);
   const navigate = useNavigate();
-  const [previewFoto, setPreviewFoto] = useState(
-    dadosCuidador.fotoPerfil ? URL.createObjectURL(dadosCuidador.fotoPerfil) : null
-  );
+  const [previewFoto, setPreviewFoto] = useState(null);
+
+  // Busca os dados do cuidador no backend
+  useEffect(() => {
+    const buscarPerfil = async () => {
+      try {
+        const id = localStorage.getItem('idUsuario'); // ID salvo no login
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:5000/api/cuidadores/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPerfil(response.data);
+
+        if (response.data.fotoPerfil) {
+          const url = `http://localhost:5000/uploads/${response.data.fotoPerfil}`;
+          setPreviewFoto(url);
+          console.log("✅ URL da foto:", url);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar perfil:", error);
+      }
+    };
+
+    buscarPerfil();
+  }, []);
+
+  if (!perfil) {
+    return <p>Carregando perfil...</p>;
+  }
 
   return (
     <div style={styles.container}>
@@ -25,36 +53,35 @@ const PerfilCuidador = () => {
           </label>
         </div>
 
-        <p><strong>CPF:</strong> {dadosCuidador.cpf}</p>    
-        <p><strong>Nome:</strong> {dadosCuidador.nome}</p>
-        <p><strong>Idade:</strong> {dadosCuidador.idade}</p>
-        <p><strong>E-mail:</strong> {dadosCuidador.email}</p>
-        <p><strong>Telefone:</strong> {dadosCuidador.telefone}</p>
-        <p><strong>Endereço:</strong> {dadosCuidador.endereco}</p>
-        <p><strong>Formação:</strong> {dadosCuidador.formacao}</p>
-        <p><strong>Especialidade:</strong> {dadosCuidador.especialidade}</p>
-
+        <p><strong>CPF:</strong> {perfil.cpf}</p>    
+        <p><strong>Nome:</strong> {perfil.nome}</p>
+        <p><strong>Idade:</strong> {perfil.idade}</p>
+        <p><strong>E-mail:</strong> {perfil.email}</p>
+        <p><strong>Telefone:</strong> {perfil.telefone}</p>
+        <p><strong>Endereço:</strong> {perfil.endereco}</p>
+        <p><strong>Formação:</strong> {perfil.formacao}</p>
+        <p><strong>Especialidade:</strong> {perfil.especialidade}</p>
 
         <div style={styles.secao}>
           <h2>Experiências</h2>
-          <p>{dadosCuidador.experiencias}</p>
+          <p>{perfil.experiencias}</p>
         </div>
 
         <div style={styles.secao}>
           <h2>Métodos de Trabalho</h2>
-          <p>{dadosCuidador.metodos}</p>
+          <p>{perfil.metodos}</p>
         </div>
 
         <div style={styles.secao}>
           <h2>Disponibilidade</h2>
-          <p>{dadosCuidador.disponibilidade}</p> {/* <-- adicionado aqui */}
+          <p>{perfil.disponibilidade}</p>
         </div>
 
-        {dadosCuidador.anexos?.length > 0 && (
+        {perfil.anexos?.length > 0 && (
           <div style={styles.secao}>
             <h2>Anexos:</h2>
             <ul>
-              {dadosCuidador.anexos.map((arquivo, index) => (
+              {perfil.anexos.map((arquivo, index) => (
                 <li key={index}>{arquivo}</li>
               ))}
             </ul>

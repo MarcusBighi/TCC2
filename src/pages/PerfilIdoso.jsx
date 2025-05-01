@@ -1,27 +1,39 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { IdosoContext } from '../context/IdosoContext';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiMessageSquare, FiUser } from 'react-icons/fi';
+import axios from 'axios';
+
 
 const PerfilIdoso = () => {
+  const [perfil, setPerfil] = useState(null);
   const { dadosIdoso } = useContext(IdosoContext);
   const navigate = useNavigate();
   const [previewFoto, setPreviewFoto] = useState(null);
 
   useEffect(() => {
-    // Só tenta criar uma URL se for um objeto File
-    if (dadosIdoso.fotoPerfil instanceof File) {
-      const url = URL.createObjectURL(dadosIdoso.fotoPerfil);
+    const buscarPerfil = async () => {
+      try {
+        const id = localStorage.getItem('idUsuario'); // ou de outro local que salvou
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:5000/api/idosos/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPerfil(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar perfil:", error);
+      }
+    };
+  
+    buscarPerfil();
+  }, []);
+
+  useEffect(() => {
+    if (perfil?.fotoPerfil) {
+      const url = `http://localhost:5000/uploads/${perfil.fotoPerfil}`;
+      console.log("✅ URL da foto:", url);
       setPreviewFoto(url);
-
-      return () => URL.revokeObjectURL(url); // limpeza
     }
-
-    // Se for string (nome do arquivo), você pode carregar de um caminho estático ou remoto
-    if (typeof dadosIdoso.fotoPerfil === 'string') {
-      setPreviewFoto(`/uploads/${dadosIdoso.fotoPerfil}`); // ajuste conforme seu backend
-    }
-  }, [dadosIdoso.fotoPerfil]);
+  }, [perfil]);
 
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
@@ -30,8 +42,6 @@ const PerfilIdoso = () => {
       setPreviewFoto(url);
     }
   };
-
-  const telefoneEmergencia = dadosIdoso.telefoneEmergencia?.replace(/\D/g, '');
 
   return (
     <div style={styles.container}>
@@ -58,36 +68,36 @@ const PerfilIdoso = () => {
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Nome:</p>
-            <p style={styles.valor}>{dadosIdoso.nome}</p>
+            <p style={styles.valor}>{perfil?.nome}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Endereço:</p>
-            <p style={styles.valor}>{dadosIdoso.endereco}</p>
+            <p style={styles.valor}>{perfil?.endereco}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Idade:</p>
-            <p style={styles.valor}>{dadosIdoso.idade}</p>
+            <p style={styles.valor}>{perfil?.idade}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Telefone:</p>
-            <p style={styles.valor}>{dadosIdoso.telefone}</p>
+            <p style={styles.valor}>{perfil?.telefone}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Endereço do responsável:</p>
-            <p style={styles.valor}>{dadosIdoso.enderecoResponsavel}</p>
+            <p style={styles.valor}>{perfil?.enderecoResponsavel}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Telefone de emergência:</p>
-            <p style={styles.valor}>{dadosIdoso.telefoneEmergencia}</p>
+            <p style={styles.valor}>{perfil?.telefoneEmergencia}</p>
 
-            {dadosIdoso.telefoneEmergencia && (
-              <a href={`tel:${telefoneEmergencia}`} style={styles.botaoContato}>
+            {perfil?.telefoneEmergencia && (
+              <a href={`tel:${perfil.telefoneEmergencia.replace(/\D/g, '')}`} style={styles.botaoContato}>
                 Entrar em Contato
               </a>
             )}
@@ -96,19 +106,19 @@ const PerfilIdoso = () => {
 
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Desafios do cotidiano</h2>
-          <p>{dadosIdoso.desafios}</p>
+          <p>{perfil?.desafios}</p>
         </div>
 
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Observações sobre saúde</h2>
-          <p>{dadosIdoso.observacoes}</p>
+          <p>{perfil?.observacoes}</p>
         </div>
 
-        {dadosIdoso.anexos?.length > 0 && (
+        {perfil?.anexos?.length > 0 && (
           <div style={styles.secao}>
             <h2 style={styles.subtitulo}>Exames:</h2>
             <ul style={styles.lista}>
-              {dadosIdoso.anexos.map((arquivo, index) => (
+              {perfil?.anexos.map((arquivo, index) => (
                 <li key={index} style={styles.itemLista}>{arquivo}</li>
               ))}
             </ul>

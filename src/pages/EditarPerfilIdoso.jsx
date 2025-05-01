@@ -1,27 +1,50 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { IdosoContext } from '../context/IdosoContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const EditarPerfilIdoso = () => {
-  const { dadosIdoso, atualizarDadosIdoso } = useContext(IdosoContext);
+  const { atualizarDadosIdoso } = useContext(IdosoContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    nome: dadosIdoso.nome || '',
-    idade: dadosIdoso.idade || '',
-    endereco: dadosIdoso.endereco || '',
-    telefone: dadosIdoso.telefone || '',
-    enderecoResponsavel: dadosIdoso.enderecoResponsavel || '',
-    telefoneEmergencia: dadosIdoso.telefoneEmergencia || '',
-    desafios: dadosIdoso.desafios || '',
-    observacoes: dadosIdoso.observacoes || '',
-    anexos: dadosIdoso.anexos || [],
-    fotoPerfil: dadosIdoso.fotoPerfil || null,
+    nome: '',
+    idade: '',
+    endereco: '',
+    telefone: '',
+    enderecoResponsavel: '',
+    telefoneEmergencia: '',
+    desafios: '',
+    observacoes: '',
+    anexos: [],
+    fotoPerfil: null,
   });
 
-  const [previewFoto, setPreviewFoto] = useState(
-    dadosIdoso.fotoPerfil ? URL.createObjectURL(dadosIdoso.fotoPerfil) : null
-  );
+  const [previewFoto, setPreviewFoto] = useState(null);
+
+  useEffect(() => {
+    const fetchPerfil = async () => {
+      try {
+        const id = localStorage.getItem('idUsuario');
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:5000/api/idosos/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = response.data;
+        setFormData({
+          ...data,
+          fotoPerfil: data.fotoPerfil, // filename ou url da imagem
+          anexos: data.anexos || [],
+        });
+        if (data.fotoPerfil) {
+          setPreviewFoto(`/uploads/${data.fotoPerfil}`);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar perfil para edição:", error);
+      }
+    };
+    fetchPerfil();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,8 +54,8 @@ const EditarPerfilIdoso = () => {
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPreviewFoto(URL.createObjectURL(file));
       setFormData(prev => ({ ...prev, fotoPerfil: file }));
+      setPreviewFoto(URL.createObjectURL(file));
     }
   };
 
@@ -40,14 +63,31 @@ const EditarPerfilIdoso = () => {
     const files = Array.from(e.target.files);
     setFormData(prev => ({
       ...prev,
-      anexos: [...(prev.anexos || []), ...files.map(file => file.name)],
+      anexos: [...(prev.anexos || []), ...files.map(f => f.name)],
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    atualizarDadosIdoso(formData);
-    navigate('/PerfilIdoso');
+    try {
+      const id = localStorage.getItem('idUsuario');
+      const token = localStorage.getItem('token');
+  
+      const formDataToSend = { ...formData };
+      if (formDataToSend.fotoPerfil instanceof File) {
+        formDataToSend.fotoPerfil = formDataToSend.fotoPerfil.name;
+      }
+  
+      await axios.put(`http://localhost:5000/api/idosos/${id}`, formDataToSend, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      alert('Perfil atualizado com sucesso!');
+      navigate('/PerfilIdoso');
+    } catch (error) {
+      console.error("Erro ao atualizar idoso:", error);
+      alert('Erro ao atualizar perfil.');
+    }
   };
 
   return (

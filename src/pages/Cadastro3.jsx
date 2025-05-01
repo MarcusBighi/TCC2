@@ -5,7 +5,7 @@ import axios from 'axios';
 import '@fontsource/poppins';
 
 const Cadastro3 = () => {
-  const { atualizarDadosCuidador } = useContext(CuidadorContext);
+  const { dadosCuidador, atualizarDadosCuidador } = useContext(CuidadorContext);
   const navigate = useNavigate();
 
   const [fotoPerfil, setFotoPerfil] = useState(null);
@@ -17,26 +17,25 @@ const Cadastro3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const todosAnexos = [
-      ...Array.from(arquivosExperiencia).map((file) => file.name),
-      ...Array.from(arquivosMetodos).map((file) => file.name),
-    ];
-
-    const dados = {
+  
+    const etapa3 = {
       fotoPerfil: fotoPerfil?.name || null,
       experiencias,
       metodos,
       disponibilidade,
-      anexos: todosAnexos,
+      anexos: [
+        ...Array.from(arquivosExperiencia).map(file => file.name),
+        ...Array.from(arquivosMetodos).map(file => file.name),
+      ],
     };
-
-    atualizarDadosCuidador(dados);
-
+  
+    const dadosCompletos = { ...dadosCuidador, ...etapa3 };
+    atualizarDadosCuidador(dadosCompletos);
+  
     try {
-      await axios.post('http://localhost:5000/cadastro/cuidador', dados);
+      await axios.post('http://localhost:5000/api/cuidadores', dadosCompletos);
       alert("Cadastro do cuidador finalizado com sucesso!");
-      navigate('/PerfilCuidador');
+      navigate('/login');
     } catch (error) {
       console.error("Erro ao enviar dados do cuidador:", error);
       alert("Erro ao finalizar cadastro.");

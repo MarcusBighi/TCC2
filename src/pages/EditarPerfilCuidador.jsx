@@ -1,30 +1,57 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { CuidadorContext } from '../context/CuidadorContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const EditarPerfilCuidador = () => {
-  const { dadosCuidador, atualizarDadosCuidador } = useContext(CuidadorContext);
+  const { atualizarDadosCuidador } = useContext(CuidadorContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    nome: dadosCuidador.nome || '',
-    cpf: dadosCuidador.cpf || '',
-    idade: dadosCuidador.idade || '',
-    formacao: dadosCuidador.formacao || '',
-    especialidade: dadosCuidador.especialidade || '',
-    telefone: dadosCuidador.telefone || '',
-    email: dadosCuidador.email || '',
-    senha: dadosCuidador.senha || '',
-    confirmarSenha: dadosCuidador.confirmarSenha || '',
-    experiencias: dadosCuidador.experiencias || '',
-    metodos: dadosCuidador.metodos || '',
-    anexos: dadosCuidador.anexos || [],
-    fotoPerfil: dadosCuidador.fotoPerfil || null,
+    nome: '',
+    cpf: '',
+    idade: '',
+    formacao: '',
+    especialidade: '',
+    telefone: '',
+    email: '',
+    senha: '',
+    confirmarSenha: '',
+    experiencias: '',
+    metodos: '',
+    anexos: [],
+    fotoPerfil: null,
   });
 
-  const [previewFoto, setPreviewFoto] = useState(
-    formData.fotoPerfil ? URL.createObjectURL(formData.fotoPerfil) : null
-  );
+  const [previewFoto, setPreviewFoto] = useState(null);
+
+  // ✅ Busca os dados do backend ao carregar
+  useEffect(() => {
+    const fetchPerfil = async () => {
+      try {
+        const id = localStorage.getItem('idUsuario');
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:5000/api/cuidadores/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = response.data;
+        setFormData({
+          ...data,
+          fotoPerfil: data.fotoPerfil, // filename da imagem
+          anexos: data.anexos || [],
+        });
+
+        if (data.fotoPerfil) {
+          setPreviewFoto(`/uploads/${data.fotoPerfil}`);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar perfil do cuidador para edição:", error);
+      }
+    };
+
+    fetchPerfil();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,10 +74,28 @@ const EditarPerfilCuidador = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    atualizarDadosCuidador(formData);
-    navigate('/perfilCuidador');
+    try {
+      const id = localStorage.getItem('idUsuario');
+      const token = localStorage.getItem('token');
+  
+      const formDataToSend = { ...formData };
+      // se for um File, envie apenas o nome do arquivo (ou trate upload separadamente)
+      if (formDataToSend.fotoPerfil instanceof File) {
+        formDataToSend.fotoPerfil = formDataToSend.fotoPerfil.name;
+      }
+  
+      await axios.put(`http://localhost:5000/api/cuidadores/${id}`, formDataToSend, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      alert('Perfil atualizado com sucesso!');
+      navigate('/perfilCuidador');
+    } catch (error) {
+      console.error("Erro ao atualizar cuidador:", error);
+      alert('Erro ao atualizar perfil.');
+    }
   };
 
   return (

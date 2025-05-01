@@ -15,19 +15,22 @@ const CadastroIdoso3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const etapa3 = {
-      fotoPerfil: fotoPerfil?.name || null,
-      desafios,
-      observacoes: saude,
-      anexos: arquivosSaude && Array.from(arquivosSaude).map((arquivo) => arquivo.name),
-    };
-
-    const dadosCompletos = { ...dadosIdoso, ...etapa3 };
-    setDadosIdoso(dadosCompletos);
-
+  
+    const formData = new FormData();
+    formData.append('fotoPerfil', fotoPerfil);
+    formData.append('desafios', desafios);
+    formData.append('observacoes', saude);
+    formData.append('anexos', anexos); // se quiser enviar também
+  
+    // incluir outros campos do contexto
+    Object.keys(dadosIdoso).forEach(key => {
+      formData.append(key, dadosIdoso[key]);
+    });
+  
     try {
-      await axios.post('http://localhost:5000/api/idosos', dadosCompletos);
+      await axios.post('http://localhost:5000/api/idosos', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       alert("Cadastro do idoso finalizado com sucesso!");
       navigate('/PerfilIdoso');
     } catch (error) {
