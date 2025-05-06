@@ -1,41 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiX, FiCheck, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi';
 
-const mockPessoas = [
-  {
-    id: 1,
-    nome: 'Ana Clara',
-    idade: 28,
-    cidade: 'Vitória - ES',
-    foto: 'https://i.pravatar.cc/300?img=1',
-    formacao: 'Enfermagem - UFES',
-    especialidade: 'Cuidados Paliativos',
-    disponibilidade: 'Diária', // <-- adicionado
-  },
-  {
-    id: 2,
-    nome: 'João Paulo',
-    idade: 35,
-    cidade: 'Vila Velha - ES',
-    foto: 'https://i.pravatar.cc/300?img=2',
-    formacao: 'Fisioterapia - UVV',
-    especialidade: 'Reabilitação Física',
-    disponibilidade: '3 vezes na semana', // <-- adicionado
-  },
-];
-
 const Home = () => {
+  const [cuidadores, setCuidadores] = useState([]);
   const [indexAtual, setIndexAtual] = useState(0);
-  const pessoa = mockPessoas[indexAtual];
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const buscarCuidadores = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/cuidadores');
+        setCuidadores(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar cuidadores:', error);
+      }
+    };
+
+    buscarCuidadores();
+  }, []);
+
+  const pessoa = cuidadores[indexAtual];
+
   const avancarCard = () => {
-    setIndexAtual((indexAtual + 1) % mockPessoas.length);
+    if (cuidadores.length > 0) {
+      setIndexAtual((indexAtual + 1) % cuidadores.length);
+    }
   };
 
   const verMais = () => {
-    navigate('/visualizarPerfilCuidador');
+    navigate('/visualizarPerfilCuidador', { state: { cuidador: pessoa } });
   };
 
   return (
@@ -43,17 +38,21 @@ const Home = () => {
       <div style={styles.scrollArea}>
         <h1 style={styles.titulo}>OLD+</h1>
 
-        {pessoa && (
+        {pessoa ? (
           <div style={styles.cardContainer}>
-            <div style={styles.card}>
-              <img src={pessoa.foto} alt={pessoa.nome} style={styles.foto} />
+            <div style={styles.card}>  
+            <img
+              src={`http://localhost:5000/uploads/${pessoa.fotoPerfil}`}
+              alt={pessoa.nome}
+              style={styles.fotoPerfil}
+            />
               <div style={styles.info}>
                 <h2 style={styles.nome}>{pessoa.nome}, {pessoa.idade}</h2>
-                <p style={styles.local}>{pessoa.cidade}</p>
+                <p style={styles.local}>{pessoa.endereco}</p>
                 <div style={styles.detalhes}>
                   <p><strong>Formação:</strong> {pessoa.formacao}</p>
                   <p><strong>Especialidade:</strong> {pessoa.especialidade}</p>
-                  <p><strong>Disponibilidade:</strong> {pessoa.disponibilidade}</p> {/* <-- trocado */}
+                  <p><strong>Disponibilidade:</strong> {pessoa.disponibilidade}</p>
                 </div>
                 <button style={styles.botaoInfo} onClick={verMais}>
                   + Info
@@ -70,6 +69,8 @@ const Home = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <p>Carregando cuidadores...</p>
         )}
       </div>
 
@@ -116,12 +117,14 @@ const styles = {
   },
   card: {
     width: 300,
-    borderRadius: 20,
-    overflow: 'hidden',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-    backgroundColor: '#fff',
+  borderRadius: 20,
+  overflow: 'hidden', // <-- adiciona aqui
+  boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+  backgroundColor: '#fff',
+  objectFit: 'contain',
   },
-  foto: {
+
+  fotoPerfil: {
     width: '100%',
     height: 240,
     objectFit: 'cover',

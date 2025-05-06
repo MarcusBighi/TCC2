@@ -8,13 +8,39 @@ const Chat = () => {
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState('');
 
+  // Recupera dados do cuidador do localStorage se atualizar a página
+  useEffect(() => {
+    const dadosSalvos = localStorage.getItem('dadosCuidador');
+    if (dadosSalvos && !dadosCuidador.nome) {
+      const parsed = JSON.parse(dadosSalvos);
+      Object.assign(dadosCuidador, parsed);
+    }
+  }, []);
+
+  // Carrega preview da foto
   useEffect(() => {
     if (dadosCuidador.fotoPerfil) {
-      const url = URL.createObjectURL(dadosCuidador.fotoPerfil);
-      setPreviewFoto(url);
-      return () => URL.revokeObjectURL(url);
+      setPreviewFoto(`http://localhost:5000/uploads/${dadosCuidador.fotoPerfil}`);
+    } else {
+      const dadosSalvos = JSON.parse(localStorage.getItem('dadosCuidador'));
+      if (dadosSalvos?.fotoPerfil) {
+        setPreviewFoto(`http://localhost:5000/uploads/${dadosSalvos.fotoPerfil}`);
+      }
     }
   }, [dadosCuidador.fotoPerfil]);
+
+  // Recupera mensagens salvas
+  useEffect(() => {
+    const mensagensSalvas = localStorage.getItem('mensagensChat');
+    if (mensagensSalvas) {
+      setMensagens(JSON.parse(mensagensSalvas));
+    }
+  }, []);
+
+  // Salva mensagens no localStorage sempre que mudarem
+  useEffect(() => {
+    localStorage.setItem('mensagensChat', JSON.stringify(mensagens));
+  }, [mensagens]);
 
   const handleEnviar = () => {
     if (novaMensagem.trim() !== '') {
@@ -80,10 +106,7 @@ const Chat = () => {
               />
             )}
             {msg.video && (
-              <video
-                controls
-                style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}
-              >
+              <video controls style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}>
                 <source src={msg.video} type="video/mp4" />
                 Seu navegador não suporta vídeos.
               </video>

@@ -1,23 +1,24 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaFolder } from 'react-icons/fa';
 import { CuidadorContext } from '../context/CuidadorContext';
-import { FaFolder } from 'react-icons/fa'; // Ícone de pasta
 
 const VisualizarPerfilCuidador = () => {
-  const { dadosCuidador } = useContext(CuidadorContext);
+  const { atualizarDadosCuidador } = useContext(CuidadorContext);
+  const location = useLocation();
   const navigate = useNavigate();
-  const [previewFoto, setPreviewFoto] = useState(
-    dadosCuidador.fotoPerfil ? URL.createObjectURL(dadosCuidador.fotoPerfil) : null
-  );
 
-  const handleFotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreviewFoto(URL.createObjectURL(file));
+  const cuidador = location.state?.cuidador;
+  const [previewFoto, setPreviewFoto] = useState(null);
+
+  useEffect(() => {
+    if (cuidador?.fotoPerfil) {
+      setPreviewFoto(`http://localhost:5000/uploads/${cuidador.fotoPerfil}`);
     }
-  };
+  }, [cuidador]);
 
   const irParaChat = () => {
+    localStorage.setItem('dadosCuidador', JSON.stringify(cuidador));
     navigate('/chat');
   };
 
@@ -28,64 +29,57 @@ const VisualizarPerfilCuidador = () => {
 
         {/* Foto de perfil */}
         <div style={styles.fotoContainer}>
-          <label htmlFor="fotoUpload" style={styles.circulo}>
+          <div style={styles.circulo}>
             {previewFoto ? (
               <img src={previewFoto} alt="Foto" style={styles.fotoPreview} />
             ) : (
               <span style={styles.mais}>+</span>
             )}
-            <input
-              id="fotoUpload"
-              type="file"
-              accept="image/png, image/jpeg"
-              style={{ display: 'none' }}
-              onChange={handleFotoChange}
-            />
-          </label>
+          </div>
         </div>
 
         {/* Dados principais */}
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Nome:</p>
-            <p style={styles.valor}>{dadosCuidador.nome}</p>
+            <p style={styles.valor}>{cuidador?.nome}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Formação Acadêmica:</p>
-            <p style={styles.valor}>{dadosCuidador.formacao}</p>
+            <p style={styles.valor}>{cuidador?.formacao}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Idade:</p>
-            <p style={styles.valor}>{dadosCuidador.idade}</p>
+            <p style={styles.valor}>{cuidador?.idade}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Telefone:</p>
-            <p style={styles.valor}>{dadosCuidador.telefone}</p>
+            <p style={styles.valor}>{cuidador?.telefone}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Especialidade:</p>
-            <p style={styles.valor}>{dadosCuidador.especialidade}</p>
+            <p style={styles.valor}>{cuidador?.especialidade}</p>
           </div>
           <div style={{ ...styles.coluna, textAlign: 'right' }}>
             <p style={styles.label}>E-mail:</p>
-            <p style={styles.valor}>{dadosCuidador.email}</p>
+            <p style={styles.valor}>{cuidador?.email}</p>
           </div>
         </div>
 
         {/* Experiências */}
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Experiências de Trabalho</h2>
-          <p>{dadosCuidador.experiencias}</p>
-          {dadosCuidador.anexos?.length > 0 && (
+          <p>{cuidador?.experiencias}</p>
+          {cuidador?.anexos?.length > 0 && (
             <div style={styles.anexoLinha}>
               <FaFolder style={styles.icone} />
-              <span>{dadosCuidador.anexos[0]}</span>
+              <span>{cuidador.anexos[0]}</span>
             </div>
           )}
         </div>
@@ -93,11 +87,11 @@ const VisualizarPerfilCuidador = () => {
         {/* Métodos */}
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Métodos de Trabalho</h2>
-          <p>{dadosCuidador.metodos}</p>
-          {dadosCuidador.anexos?.length > 1 && (
+          <p>{cuidador?.metodos}</p>
+          {cuidador?.anexos?.length > 1 && (
             <div style={styles.anexoLinha}>
               <FaFolder style={styles.icone} />
-              <span>{dadosCuidador.anexos[1]}</span>
+              <span>{cuidador.anexos[1]}</span>
             </div>
           )}
         </div>
@@ -160,6 +154,11 @@ const styles = {
   mais: {
     fontSize: 48,
     marginTop: -4,
+  },
+  fotoContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: 16,
   },
   linha: {
     display: 'flex',
