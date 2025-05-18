@@ -1,40 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiX, FiCheck, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi';
 
-const mockIdosos = [
-  {
-    id: 1,
-    nome: 'Sebastião Gomes',
-    idade: 76,
-    cidade: 'Cariacica - ES',
-    foto: 'https://i.pravatar.cc/300?img=5',
-    desafios: 'Dificuldade de locomoção e audição.',
-    telefone: '(27) 98888-1111',
-  },
-  {
-    id: 2,
-    nome: 'Maria das Graças',
-    idade: 81,
-    cidade: 'Linhares - ES',
-    foto: 'https://i.pravatar.cc/300?img=6',
-    desafios: 'Necessita de ajuda para tomar medicação.',
-    telefone: '(27) 97777-2222',
-  },
-];
-
 const HomeIdoso = () => {
+  const [idosos, setIdosos] = useState([]);
   const [indexAtual, setIndexAtual] = useState(0);
-  const idoso = mockIdosos[indexAtual];
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const carregarIdosos = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/idosos');
+        setIdosos(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar idosos:', error);
+      }
+    };
+
+    carregarIdosos();
+  }, []);
+
   const avancarCard = () => {
-    setIndexAtual((indexAtual + 1) % mockIdosos.length);
+    setIndexAtual((indexAtual + 1) % idosos.length);
   };
 
-  const verMais = () => {
-    navigate('/visualizarPerfilIdoso'); // ajuste conforme sua rota real
-  };
+  const verMais = (id) => {
+  navigate(`/visualizarPerfilIdoso/${id}`);
+};
+
+  const idoso = idosos[indexAtual];
 
   return (
     <div style={styles.container}>
@@ -44,17 +39,21 @@ const HomeIdoso = () => {
         {idoso && (
           <div style={styles.cardContainer}>
             <div style={styles.card}>
-              <img src={idoso.foto} alt={idoso.nome} style={styles.foto} />
+              <img
+                src={`http://localhost:5000/uploads/${idoso.fotoPerfil}`}
+                alt={idoso.nome}
+                style={styles.foto}
+              />
               <div style={styles.info}>
                 <h2 style={styles.nome}>{idoso.nome}, {idoso.idade}</h2>
-                <p style={styles.local}>{idoso.cidade}</p>
+                <p style={styles.local}>{idoso.endereco}</p>
                 <div style={styles.detalhes}>
                   <p><strong>Desafios:</strong> {idoso.desafios}</p>
                   <p><strong>Contato:</strong> {idoso.telefone}</p>
                 </div>
-                <button style={styles.botaoInfo} onClick={verMais}>
-                  + Info
-                </button>
+                <button style={styles.botaoInfo} onClick={() => verMais(idoso._id)}>
+                     + Info
+              </button>
               </div>
             </div>
 
@@ -71,13 +70,14 @@ const HomeIdoso = () => {
       </div>
 
       <div style={styles.navbar}>
-  <FiHome size={24} />
-  <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} />
-  <FiUser size={24} />
-</div>
+        <FiHome size={24} />
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} />
+        <FiUser size={24} />
+      </div>
     </div>
   );
 };
+
 
 const styles = {
   container: {

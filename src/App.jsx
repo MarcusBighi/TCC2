@@ -38,10 +38,10 @@ function App() {
       <Route path="/cadastroIdoso" element={<CadastroIdoso />} />
       <Route path="/cadastroIdoso2" element={<CadastroIdoso2 />} />
       <Route path="/cadastroIdoso3" element={<CadastroIdoso3 />} />
-      <Route path="/visualizarPerfilIdoso" element={<VisualizarPerfilIdoso />} />
+      <Route path="/visualizarPerfilIdoso/:id" element={<VisualizarPerfilIdoso />} />
       <Route path="/visualizarPerfilCuidador" element={<VisualizarPerfilCuidador />} />
       <Route path="/chat" element={<Chat />} />
-      <Route path="/ChatCuidadorIdoso" element={<ChatCuidadorIdoso />} />
+      <Route path="/ChatCuidadorIdoso/:id" element={<ChatCuidadorIdoso />} />
       <Route path="/perfilIdoso" element={<PerfilIdoso />} />
       <Route path="/EditarPerfilIdoso" element={<EditarPerfilIdoso />} />
       <Route path="/perfilCuidador" element={<PerfilCuidador />} />

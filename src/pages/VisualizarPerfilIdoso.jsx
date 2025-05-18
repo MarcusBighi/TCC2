@@ -1,22 +1,29 @@
-import React, { useContext, useState } from 'react';
-import { IdosoContext } from '../context/IdosoContext';
-import { useNavigate } from 'react-router-dom'; // ✅ Importar o useNavigate
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const VisualizarPerfilIdoso = () => {
-  const { dadosIdoso } = useContext(IdosoContext);
-  const navigate = useNavigate(); // ✅ Hook de navegação
-  const [previewFoto, setPreviewFoto] = useState(
-    dadosIdoso.fotoPerfil ? URL.createObjectURL(dadosIdoso.fotoPerfil) : null
-  );
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [idoso, setIdoso] = useState(null);
+  const [previewFoto, setPreviewFoto] = useState(null);
 
-  const handleFotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreviewFoto(URL.createObjectURL(file));
-    }
-  };
+  useEffect(() => {
+    const fetchIdoso = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/idosos/${id}`);
+        setIdoso(response.data);
+        setPreviewFoto(`http://localhost:5000/uploads/${response.data.fotoPerfil}`);
+      } catch (error) {
+        console.error("Erro ao buscar idoso:", error);
+      }
+    };
+    fetchIdoso();
+  }, [id]);
 
-  const telefoneEmergencia = dadosIdoso.telefoneEmergencia?.replace(/\D/g, '');
+  if (!idoso) return <p>Carregando...</p>;
+
+  const telefoneEmergencia = idoso.telefoneEmergencia?.replace(/\D/g, '');
 
   return (
     <div style={styles.container}>
@@ -24,54 +31,47 @@ const VisualizarPerfilIdoso = () => {
         <h1 style={styles.titulo}>Perfil do Idoso</h1>
 
         <div style={styles.fotoContainer}>
-          <label htmlFor="fotoUpload" style={styles.circulo}>
+          <label style={styles.circulo}>
             {previewFoto ? (
               <img src={previewFoto} alt="Foto" style={styles.fotoPreview} />
             ) : (
               <span style={styles.mais}>+</span>
             )}
-            <input
-              id="fotoUpload"
-              type="file"
-              accept="image/png, image/jpeg"
-              style={{ display: 'none' }}
-              onChange={handleFotoChange}
-            />
           </label>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Nome:</p>
-            <p style={styles.valor}>{dadosIdoso.nome}</p>
+            <p style={styles.valor}>{idoso.nome}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Endereço:</p>
-            <p style={styles.valor}>{dadosIdoso.endereco}</p>
+            <p style={styles.valor}>{idoso.endereco}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Idade:</p>
-            <p style={styles.valor}>{dadosIdoso.idade}</p>
+            <p style={styles.valor}>{idoso.idade}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Telefone:</p>
-            <p style={styles.valor}>{dadosIdoso.telefone}</p>
+            <p style={styles.valor}>{idoso.telefone}</p>
           </div>
         </div>
 
         <div style={styles.linha}>
           <div style={styles.coluna}>
             <p style={styles.label}>Endereço do responsável:</p>
-            <p style={styles.valor}>{dadosIdoso.enderecoResponsavel}</p>
+            <p style={styles.valor}>{idoso.enderecoResponsavel}</p>
           </div>
           <div style={styles.coluna}>
             <p style={styles.label}>Telefone de emergência:</p>
-            <p style={styles.valor}>{dadosIdoso.telefoneEmergencia}</p>
+            <p style={styles.valor}>{idoso.telefoneEmergencia}</p>
 
-            {dadosIdoso.telefoneEmergencia && (
+            {idoso.telefoneEmergencia && (
               <a href={`tel:${telefoneEmergencia}`} style={styles.botaoContato}>
                 Entrar em Contato
               </a>
@@ -81,39 +81,38 @@ const VisualizarPerfilIdoso = () => {
 
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Desafios do cotidiano</h2>
-          <p>{dadosIdoso.desafios}</p>
+          <p>{idoso.desafios}</p>
         </div>
 
         <div style={styles.secao}>
           <h2 style={styles.subtitulo}>Observações sobre saúde</h2>
-          <p>{dadosIdoso.observacoes}</p>
+          <p>{idoso.observacoes}</p>
         </div>
 
-        {dadosIdoso.anexos?.length > 0 && (
+        {idoso.anexos?.length > 0 && (
           <div style={styles.secao}>
             <h2 style={styles.subtitulo}>Exames:</h2>
             <ul style={styles.lista}>
-              {dadosIdoso.anexos.map((arquivo, index) => (
+              {idoso.anexos.map((arquivo, index) => (
                 <li key={index} style={styles.itemLista}>{arquivo}</li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* ✅ Botão com redirecionamento */}
         <div style={styles.enviarMensagemContainer}>
           <button
             style={styles.enviarMensagemBotao}
-            onClick={() => navigate('/ChatCuidadorIdoso')}
+             onClick={() => navigate(`/ChatCuidadorIdoso/${id}`)} //
           >
             Enviar Mensagem
           </button>
         </div>
-
       </div>
     </div>
   );
 };
+
 
 const styles = {
   container: {

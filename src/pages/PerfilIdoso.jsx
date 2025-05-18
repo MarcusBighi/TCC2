@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { IdosoContext } from '../context/IdosoContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FiX, FiCheck, FiUser, FiMessageSquare, FiHome } from 'react-icons/fi';
+
 
 
 const PerfilIdoso = () => {
@@ -134,6 +136,11 @@ const PerfilIdoso = () => {
           </button>
         </div>
       </div>
+      <div style={styles.navbar}>
+              <FiHome size={24} onClick={() => navigate('/home')} />
+              <FiMessageSquare size={24} onClick={() => navigate('/historicoChatIdoso')} />
+              <FiUser size={24} onClick={() => navigate('/perfilIdoso')}/>
+            </div>
     </div>
   );
 };
@@ -244,6 +251,22 @@ const styles = {
     justifyContent: 'center',
     marginTop: 20,
   },
+
+  navbar: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    maxWidth: 375,
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTop: '1px solid #ddd',
+    padding: 12,
+    zIndex: 10,
+  },
+
   enviarMensagemBotao: {
     backgroundColor: '#87CEEB',
     color: '#fff',

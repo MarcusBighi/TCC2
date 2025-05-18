@@ -20,7 +20,7 @@ const CadastroIdoso3 = () => {
     formData.append('fotoPerfil', fotoPerfil);
     formData.append('desafios', desafios);
     formData.append('observacoes', saude);
-    formData.append('anexos', anexos); // se quiser enviar também
+    formData.append('anexos', arquivosSaude); // se quiser enviar também
   
     // incluir outros campos do contexto
     Object.keys(dadosIdoso).forEach(key => {
@@ -31,6 +31,11 @@ const CadastroIdoso3 = () => {
       await axios.post('http://localhost:5000/api/idosos', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
+      const idCriado = response.data.idoso._id;
+      localStorage.setItem('idUsuario', idCriado); // 👈 Salva o ID no localStorage
+
+
       alert("Cadastro do idoso finalizado com sucesso!");
       navigate('/PerfilIdoso');
     } catch (error) {

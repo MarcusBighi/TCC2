@@ -1,27 +1,61 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { IdosoContext } from '../context/IdosoContext';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
 
 const ChatCuidadorIdoso = () => {
-  const { dadosIdoso } = useContext(IdosoContext);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [idoso, setIdoso] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState('');
 
   useEffect(() => {
-    if (dadosIdoso.fotoPerfil) {
-      const url = URL.createObjectURL(dadosIdoso.fotoPerfil);
-      setPreviewFoto(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [dadosIdoso.fotoPerfil]);
+    const buscarIdoso = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/idosos/${id}`);
+        setIdoso(response.data);
+        if (response.data.fotoPerfil) {
+          setPreviewFoto(`http://localhost:5000/uploads/${response.data.fotoPerfil}`);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do idoso:", error);
+      }
+    };
 
-  const handleEnviar = () => {
-    if (novaMensagem.trim() !== '') {
-      setMensagens([...mensagens, { texto: novaMensagem, autor: 'cuidador' }]);
-      setNovaMensagem('');
-    }
-  };
+    buscarIdoso();
+  }, [id]);
+
+const handleEnviar = async () => {
+  if (novaMensagem.trim() === '') return;
+
+  const remetenteId = localStorage.getItem('idUsuario');
+
+  if (!remetenteId || remetenteId.length !== 24) {
+    alert('ID do cuidador inválido ou não encontrado.');
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://localhost:5000/api/mensagens', {
+      remetenteId,
+      destinatarioId: id,
+      conteudo: novaMensagem,
+      tipo: 'texto'
+    });
+
+    setMensagens((prev) => [...prev, {
+      texto: novaMensagem,
+      autor: 'cuidador'
+    }]);
+
+    setNovaMensagem('');
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
+    alert('Erro ao enviar a mensagem.');
+  }
+};
 
   const handleArquivo = (e) => {
     const file = e.target.files[0];
@@ -41,6 +75,8 @@ const ChatCuidadorIdoso = () => {
     }
   };
 
+  if (!idoso) return <p>Carregando...</p>;
+
   return (
     <div style={styles.container}>
       {/* Cabeçalho */}
@@ -52,8 +88,8 @@ const ChatCuidadorIdoso = () => {
             style={styles.foto}
           />
           <div>
-            <p style={styles.nome}>{dadosIdoso.nome || 'Nome do Idoso'}</p>
-            <p style={styles.idade}>{dadosIdoso.idade ? `${dadosIdoso.idade} anos` : 'Idade'}</p>
+            <p style={styles.nome}>{idoso.nome}</p>
+            <p style={styles.idade}>{idoso.idade} anos</p>
           </div>
         </div>
         <button style={styles.botaoChamada}>
@@ -82,10 +118,7 @@ const ChatCuidadorIdoso = () => {
               />
             )}
             {msg.video && (
-              <video
-                controls
-                style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}
-              >
+              <video controls style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}>
                 <source src={msg.video} type="video/mp4" />
                 Seu navegador não suporta vídeos.
               </video>
@@ -128,15 +161,31 @@ const ChatCuidadorIdoso = () => {
 
       {/* Navegação inferior */}
       <div style={styles.navBar}>
-        <FiHome size={24} color="#0C0B55" />
-        <FiMessageSquare size={24} color="#0C0B55" />
-        <FiUser size={24} color="#0C0B55" />
+        <FiHome size={24} onClick={() => navigate('/homeIdoso')} />
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')}/>
+        <FiUser size={24} onClick={() => navigate('/perfilCuidador')} />
       </div>
     </div>
   );
 };
 
 const styles = {
+
+  navbar: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    maxWidth: 375,
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTop: '1px solid #ddd',
+    padding: 12,
+    zIndex: 10,
+  },
+
   container: {
     backgroundColor: '#98FB98',
     minHeight: '100vh',
