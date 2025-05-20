@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { CuidadorContext } from '../context/CuidadorContext';
 import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
+import axios from 'axios';
 
 const Chat = () => {
   const { dadosCuidador } = useContext(CuidadorContext);
@@ -39,15 +40,60 @@ const Chat = () => {
 
   // Salva mensagens no localStorage sempre que mudarem
   useEffect(() => {
-    localStorage.setItem('mensagensChat', JSON.stringify(mensagens));
-  }, [mensagens]);
+  const buscarMensagens = async () => {
+    const idosoId = localStorage.getItem('idUsuario');
+    const cuidadorSalvo = JSON.parse(localStorage.getItem('dadosCuidador'));
+    const cuidadorId = cuidadorSalvo?._id || dadosCuidador._id;
 
-  const handleEnviar = () => {
-    if (novaMensagem.trim() !== '') {
-      setMensagens([...mensagens, { texto: novaMensagem, autor: 'idoso' }]);
-      setNovaMensagem('');
+    if (!idosoId || !cuidadorId) return;
+
+    try {
+      const response = await axios.get(`http://localhost:5000/api/mensagens/${idosoId}/${cuidadorId}`);
+      const msgs = response.data.map(msg => ({
+        texto: msg.conteudo,
+        autor: msg.remetenteId === idosoId ? 'idoso' : 'cuidador'
+      }));
+      setMensagens(msgs);
+    } catch (err) {
+      console.error('Erro ao buscar mensagens:', err);
     }
   };
+
+  buscarMensagens();
+}, []);
+
+  const handleEnviar = async () => {
+  if (novaMensagem.trim() === '') return;
+
+  const remetenteId = localStorage.getItem('idUsuario');
+  const cuidadorSalvo = JSON.parse(localStorage.getItem('dadosCuidador'));
+  const destinatarioId = cuidadorSalvo?._id || dadosCuidador._id;
+
+  if (!remetenteId || !destinatarioId || remetenteId.length !== 24 || destinatarioId.length !== 24) {
+    alert('ID inválido para envio de mensagem.');
+    return;
+  }
+
+  try {
+    await axios.post('http://localhost:5000/api/mensagens', {
+      remetenteId,
+      destinatarioId,
+      conteudo: novaMensagem,
+      tipo: 'texto',
+    });
+
+    setMensagens((prev) => [...prev, {
+      texto: novaMensagem,
+      autor: 'idoso'
+    }]);
+
+    setNovaMensagem('');
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
+    alert('Erro ao enviar a mensagem.');
+  }
+};
+
 
   const handleArquivo = (e) => {
     const file = e.target.files[0];

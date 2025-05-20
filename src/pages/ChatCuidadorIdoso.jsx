@@ -4,12 +4,14 @@ import axios from 'axios';
 import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
 
 const ChatCuidadorIdoso = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // ID do idoso
   const navigate = useNavigate();
   const [idoso, setIdoso] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState('');
+
+  const cuidadorId = localStorage.getItem('idUsuario');
 
   useEffect(() => {
     const buscarIdoso = async () => {
@@ -20,42 +22,57 @@ const ChatCuidadorIdoso = () => {
           setPreviewFoto(`http://localhost:5000/uploads/${response.data.fotoPerfil}`);
         }
       } catch (error) {
-        console.error("Erro ao buscar dados do idoso:", error);
+        console.error("❌ Erro ao buscar idoso:", error.response?.data || error.message);
       }
     };
-
     buscarIdoso();
   }, [id]);
 
-const handleEnviar = async () => {
-  if (novaMensagem.trim() === '') return;
+  useEffect(() => {
+    const buscarMensagens = async () => {
+      if (!cuidadorId || cuidadorId.length !== 24 || !id) return;
 
-  const remetenteId = localStorage.getItem('idUsuario');
+      try {
+        const response = await axios.get(`http://localhost:5000/api/mensagens/${cuidadorId}/${id}`);
+        const mensagensFormatadas = response.data.map((msg) => ({
+          texto: msg.conteudo,
+          autor: msg.remetenteId === cuidadorId ? 'cuidador' : 'idoso',
+        }));
+        setMensagens(mensagensFormatadas);
+      } catch (error) {
+        console.error("❌ Erro ao carregar mensagens:", error.response?.data || error.message);
+      }
+    };
 
-  if (!remetenteId || remetenteId.length !== 24) {
-    alert('ID do cuidador inválido ou não encontrado.');
-    return;
-  }
+    buscarMensagens();
+  }, [id, cuidadorId]);
 
-  try {
-    const response = await axios.post('http://localhost:5000/api/mensagens', {
-      remetenteId,
-      destinatarioId: id,
-      conteudo: novaMensagem,
-      tipo: 'texto'
-    });
+  const handleEnviar = async () => {
+    if (novaMensagem.trim() === '') return;
+    if (!cuidadorId || cuidadorId.length !== 24) {
+      alert('ID do cuidador inválido.');
+      return;
+    }
 
-    setMensagens((prev) => [...prev, {
-      texto: novaMensagem,
-      autor: 'cuidador'
-    }]);
+    try {
+      await axios.post('http://localhost:5000/api/mensagens', {
+        remetenteId: cuidadorId,
+        destinatarioId: id,
+        conteudo: novaMensagem,
+        tipo: 'texto',
+      });
 
-    setNovaMensagem('');
-  } catch (error) {
-    console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
-    alert('Erro ao enviar a mensagem.');
-  }
-};
+      setMensagens((prev) => [...prev, {
+        texto: novaMensagem,
+        autor: 'cuidador',
+      }]);
+
+      setNovaMensagem('');
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
+      alert('Erro ao enviar a mensagem.');
+    }
+  };
 
   const handleArquivo = (e) => {
     const file = e.target.files[0];
@@ -97,7 +114,7 @@ const handleEnviar = async () => {
         </button>
       </div>
 
-      {/* Área de mensagens */}
+      {/* Mensagens */}
       <div style={styles.chatArea}>
         {mensagens.map((msg, index) => (
           <div
@@ -105,31 +122,22 @@ const handleEnviar = async () => {
             style={{
               ...styles.mensagem,
               alignSelf: msg.autor === 'cuidador' ? 'flex-end' : 'flex-start',
-              backgroundColor: msg.autor === 'cuidador' ? '#98FB98' : '#fff',
-              color: '#000',
+              backgroundColor: msg.autor === 'cuidador' ? '#32CD32' : '#fff',
+              color: msg.autor === 'cuidador' ? '#fff' : '#000',
             }}
           >
             {msg.texto && <span>{msg.texto}</span>}
             {msg.imagem && (
-              <img
-                src={msg.imagem}
-                alt="Imagem enviada"
-                style={{ maxWidth: 150, marginTop: 6, borderRadius: 8 }}
-              />
+              <img src={msg.imagem} alt="Imagem" style={{ maxWidth: 150, marginTop: 6, borderRadius: 8 }} />
             )}
             {msg.video && (
               <video controls style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}>
                 <source src={msg.video} type="video/mp4" />
-                Seu navegador não suporta vídeos.
+                Seu navegador não suporta vídeo.
               </video>
             )}
             {msg.pdf && (
-              <a
-                href={msg.pdf}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginTop: 6, display: 'block', color: '#000', fontWeight: 'bold' }}
-              >
+              <a href={msg.pdf} target="_blank" rel="noopener noreferrer" style={{ marginTop: 6, display: 'block', color: '#fff', fontWeight: 'bold' }}>
                 📄 Visualizar PDF
               </a>
             )}
@@ -162,7 +170,7 @@ const handleEnviar = async () => {
       {/* Navegação inferior */}
       <div style={styles.navBar}>
         <FiHome size={24} onClick={() => navigate('/homeIdoso')} />
-        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')}/>
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatCuidador')} />
         <FiUser size={24} onClick={() => navigate('/perfilCuidador')} />
       </div>
     </div>
@@ -170,24 +178,8 @@ const handleEnviar = async () => {
 };
 
 const styles = {
-
-  navbar: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    maxWidth: 375,
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderTop: '1px solid #ddd',
-    padding: 12,
-    zIndex: 10,
-  },
-
   container: {
-    backgroundColor: '#98FB98',
+    backgroundColor: '#90EE90', // verde claro
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
@@ -211,7 +203,7 @@ const styles = {
     height: 45,
     borderRadius: '50%',
     objectFit: 'cover',
-    border: '2px solid #98FB98',
+    border: '2px solid #32CD32',
   },
   nome: {
     fontWeight: 'bold',
@@ -224,7 +216,7 @@ const styles = {
     margin: 0,
   },
   botaoChamada: {
-    backgroundColor: '#98FB98',
+    backgroundColor: '#32CD32',
     border: 'none',
     padding: 8,
     borderRadius: '50%',
@@ -260,8 +252,8 @@ const styles = {
     fontSize: 14,
   },
   enviar: {
-    backgroundColor: '#98FB98',
-    color: '#000',
+    backgroundColor: '#32CD32',
+    color: '#fff',
     border: 'none',
     padding: '10px 16px',
     borderRadius: 8,
@@ -285,5 +277,3 @@ const styles = {
 };
 
 export default ChatCuidadorIdoso;
-
-
