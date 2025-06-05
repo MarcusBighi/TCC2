@@ -40,7 +40,7 @@ function App() {
       <Route path="/cadastroIdoso3" element={<CadastroIdoso3 />} />
       <Route path="/visualizarPerfilIdoso/:id" element={<VisualizarPerfilIdoso />} />
       <Route path="/visualizarPerfilCuidador" element={<VisualizarPerfilCuidador />} />
-      <Route path="/chat" element={<Chat />} />
+      <Route path="/chat/:id" element={<Chat />} />
       <Route path="/ChatCuidadorIdoso/:id" element={<ChatCuidadorIdoso />} />
       <Route path="/perfilIdoso" element={<PerfilIdoso />} />
       <Route path="/EditarPerfilIdoso" element={<EditarPerfilIdoso />} />

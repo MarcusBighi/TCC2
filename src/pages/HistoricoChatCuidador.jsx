@@ -1,29 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiMessageSquare, FiUser, FiHome } from 'react-icons/fi';
-
-const conversas = [
-  {
-    id: 1,
-    nome: 'Sebastião Gomes',
-    foto: 'https://i.pravatar.cc/300?img=5',
-    ultimaMensagem: 'Bom dia! Precisa de ajuda com algo?',
-    horario: '09:45',
-  },
-  {
-    id: 2,
-    nome: 'Maria das Graças',
-    foto: 'https://i.pravatar.cc/300?img=6',
-    ultimaMensagem: 'Obrigado por ontem, me ajudou muito!',
-    horario: 'Ontem',
-  },
-];
 
 const HistoricoChatCuidador = () => {
   const navigate = useNavigate();
+  const [conversas, setConversas] = useState([]);
+
+  useEffect(() => {
+    const fetchConversas = async () => {
+      const idUsuario = localStorage.getItem('idUsuario');
+      if (!idUsuario) return;
+
+      try {
+        const response = await axios.get(`http://localhost:5000/api/mensagens/historico/${idUsuario}`);
+        const mensagens = response.data;
+
+        const conversasFormatadas = mensagens.map((mensagem) => ({
+          id: mensagem.outroUsuarioId,
+          nome: mensagem.nomeOutroUsuario,
+          foto: mensagem.fotoOutroUsuario 
+          ? `http://localhost:5000/uploads/${mensagem.fotoOutroUsuario}` 
+          : 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+          ultimaMensagem: mensagem.conteudo,
+          horario: new Date(mensagem.dataEnvio).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+        }));
+
+        setConversas(conversasFormatadas);
+      } catch (error) {
+        console.error('Erro ao buscar mensagens:', error);
+      }
+    };
+
+    fetchConversas();
+  }, []);
 
   const abrirChat = (idIdoso) => {
-    navigate(`/chat/${idIdoso}`);
+    navigate(`/chatCuidadorIdoso/${idIdoso}`);
   };
 
   return (
@@ -46,9 +62,9 @@ const HistoricoChatCuidador = () => {
       </div>
 
       <div style={styles.navbar}>
-        <FiHome size={24} onClick={() => navigate('/home')}/>
-        <FiMessageSquare size={24}/>
-        <FiUser size={24} onClick={() => navigate('/perfilCuidador')}/>
+        <FiHome size={24} onClick={() => navigate('/home')} />
+        <FiMessageSquare size={24} />
+        <FiUser size={24} onClick={() => navigate('/perfilCuidador')} />
       </div>
     </div>
   );
@@ -67,7 +83,7 @@ const styles = {
   titulo: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#32CD32', // cor do cuidador
+    color: '#32CD32',
     textAlign: 'center',
     padding: 20,
     margin: 0,
@@ -105,7 +121,7 @@ const styles = {
   nome: {
     fontWeight: '600',
     fontSize: 16,
-    color: '#32CD32', // cor do cuidador
+    color: '#32CD32',
   },
   horario: {
     fontSize: 12,
@@ -119,18 +135,21 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   navbar: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    maxWidth: 375,
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderTop: '1px solid #ddd',
-    padding: 12,
-  },
+  position: 'fixed',
+  bottom: 0,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: '100%',
+  maxWidth: 375,
+  display: 'flex',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  backgroundColor: '#fff',
+  borderTop: '1px solid #ddd',
+  padding: 12,
+  zIndex: 10,
+  borderRadius: '12px 12px 0 0', // opcional: deixa visualmente mais bonito
+},
 };
 
 export default HistoricoChatCuidador;

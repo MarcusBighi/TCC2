@@ -1,100 +1,81 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { CuidadorContext } from '../context/CuidadorContext';
-import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
 
 const Chat = () => {
-  const { dadosCuidador } = useContext(CuidadorContext);
-  const [previewFoto, setPreviewFoto] = useState(null);
+  const { id: cuidadorId } = useParams(); // ID do cuidador vindo da URL
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState('');
+  const [cuidador, setCuidador] = useState({});
+  const [previewFoto, setPreviewFoto] = useState(null);
 
-  // Recupera dados do cuidador do localStorage se atualizar a página
+  // Buscar dados do cuidador
   useEffect(() => {
-    const dadosSalvos = localStorage.getItem('dadosCuidador');
-    if (dadosSalvos && !dadosCuidador.nome) {
-      const parsed = JSON.parse(dadosSalvos);
-      Object.assign(dadosCuidador, parsed);
-    }
-  }, []);
-
-  // Carrega preview da foto
-  useEffect(() => {
-    if (dadosCuidador.fotoPerfil) {
-      setPreviewFoto(`http://localhost:5000/uploads/${dadosCuidador.fotoPerfil}`);
-    } else {
-      const dadosSalvos = JSON.parse(localStorage.getItem('dadosCuidador'));
-      if (dadosSalvos?.fotoPerfil) {
-        setPreviewFoto(`http://localhost:5000/uploads/${dadosSalvos.fotoPerfil}`);
+    const buscarCuidador = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/cuidadores/${cuidadorId}`);
+        setCuidador(response.data);
+        if (response.data.fotoPerfil) {
+          setPreviewFoto(`http://localhost:5000/uploads/${response.data.fotoPerfil}`);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar cuidador:', error);
       }
-    }
-  }, [dadosCuidador.fotoPerfil]);
+    };
 
-  // Recupera mensagens salvas
+    if (cuidadorId) buscarCuidador();
+  }, [cuidadorId]);
+
+  // Buscar mensagens
   useEffect(() => {
-    const mensagensSalvas = localStorage.getItem('mensagensChat');
-    if (mensagensSalvas) {
-      setMensagens(JSON.parse(mensagensSalvas));
-    }
-  }, []);
+    const buscarMensagens = async () => {
+      const idosoId = localStorage.getItem('idUsuario');
+      if (!idosoId || !cuidadorId) return;
 
-  // Salva mensagens no localStorage sempre que mudarem
-  useEffect(() => {
-  const buscarMensagens = async () => {
-    const idosoId = localStorage.getItem('idUsuario');
-    const cuidadorSalvo = JSON.parse(localStorage.getItem('dadosCuidador'));
-    const cuidadorId = cuidadorSalvo?._id || dadosCuidador._id;
+      try {
+        const response = await axios.get(`http://localhost:5000/api/mensagens/${idosoId}/${cuidadorId}`);
+        const msgs = response.data.map(msg => ({
+          texto: msg.conteudo,
+          autor: msg.remetenteId === idosoId ? 'idoso' : 'cuidador'
+        }));
+        setMensagens(msgs);
+      } catch (err) {
+        console.error('Erro ao buscar mensagens:', err);
+      }
+    };
 
-    if (!idosoId || !cuidadorId) return;
+    buscarMensagens();
+  }, [cuidadorId]);
+
+  // Enviar nova mensagem
+  const handleEnviar = async () => {
+    const remetenteId = localStorage.getItem('idUsuario');
+    const destinatarioId = cuidadorId;
+
+    if (!novaMensagem.trim()) return;
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/mensagens/${idosoId}/${cuidadorId}`);
-      const msgs = response.data.map(msg => ({
-        texto: msg.conteudo,
-        autor: msg.remetenteId === idosoId ? 'idoso' : 'cuidador'
-      }));
-      setMensagens(msgs);
-    } catch (err) {
-      console.error('Erro ao buscar mensagens:', err);
+      await axios.post('http://localhost:5000/api/mensagens', {
+        remetenteId,
+        destinatarioId,
+        conteudo: novaMensagem,
+        tipo: 'texto',
+      });
+
+      setMensagens((prev) => [...prev, {
+        texto: novaMensagem,
+        autor: 'idoso'
+      }]);
+
+      setNovaMensagem('');
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
+      alert('Erro ao enviar a mensagem.');
     }
   };
 
-  buscarMensagens();
-}, []);
-
-  const handleEnviar = async () => {
-  if (novaMensagem.trim() === '') return;
-
-  const remetenteId = localStorage.getItem('idUsuario');
-  const cuidadorSalvo = JSON.parse(localStorage.getItem('dadosCuidador'));
-  const destinatarioId = cuidadorSalvo?._id || dadosCuidador._id;
-
-  if (!remetenteId || !destinatarioId || remetenteId.length !== 24 || destinatarioId.length !== 24) {
-    alert('ID inválido para envio de mensagem.');
-    return;
-  }
-
-  try {
-    await axios.post('http://localhost:5000/api/mensagens', {
-      remetenteId,
-      destinatarioId,
-      conteudo: novaMensagem,
-      tipo: 'texto',
-    });
-
-    setMensagens((prev) => [...prev, {
-      texto: novaMensagem,
-      autor: 'idoso'
-    }]);
-
-    setNovaMensagem('');
-  } catch (error) {
-    console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
-    alert('Erro ao enviar a mensagem.');
-  }
-};
-
-
+  // Anexar arquivo (visualização local)
   const handleArquivo = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -102,15 +83,17 @@ const Chat = () => {
     const tipo = file.type;
     const url = URL.createObjectURL(file);
 
-    if (tipo.startsWith('image/')) {
-      setMensagens([...mensagens, { imagem: url, nome: file.name, autor: 'idoso' }]);
-    } else if (tipo === 'application/pdf') {
-      setMensagens([...mensagens, { pdf: url, nome: file.name, autor: 'idoso' }]);
-    } else if (tipo.startsWith('video/')) {
-      setMensagens([...mensagens, { video: url, nome: file.name, autor: 'idoso' }]);
-    } else {
-      alert('Tipo de arquivo não suportado.');
-    }
+    const nova = {
+      nome: file.name,
+      autor: 'idoso'
+    };
+
+    if (tipo.startsWith('image/')) nova.imagem = url;
+    else if (tipo === 'application/pdf') nova.pdf = url;
+    else if (tipo.startsWith('video/')) nova.video = url;
+    else return alert('Tipo de arquivo não suportado.');
+
+    setMensagens([...mensagens, nova]);
   };
 
   return (
@@ -123,8 +106,8 @@ const Chat = () => {
             style={styles.foto}
           />
           <div>
-            <p style={styles.nome}>{dadosCuidador.nome || 'Nome do Cuidador'}</p>
-            <p style={styles.especialidade}>{dadosCuidador.especialidade || 'Especialidade'}</p>
+            <p style={styles.nome}>{cuidador.nome || 'Nome do Cuidador'}</p>
+            <p style={styles.especialidade}>{cuidador.especialidade || 'Especialidade'}</p>
           </div>
         </div>
         <button style={styles.botaoChamada}>
@@ -144,26 +127,10 @@ const Chat = () => {
             }}
           >
             {msg.texto && <span>{msg.texto}</span>}
-            {msg.imagem && (
-              <img
-                src={msg.imagem}
-                alt="Imagem enviada"
-                style={{ maxWidth: 150, marginTop: 6, borderRadius: 8 }}
-              />
-            )}
-            {msg.video && (
-              <video controls style={{ maxWidth: 200, marginTop: 6, borderRadius: 8 }}>
-                <source src={msg.video} type="video/mp4" />
-                Seu navegador não suporta vídeos.
-              </video>
-            )}
+            {msg.imagem && <img src={msg.imagem} alt="imagem" style={{ maxWidth: 150, borderRadius: 8, marginTop: 6 }} />}
+            {msg.video && <video controls style={{ maxWidth: 200, borderRadius: 8, marginTop: 6 }}><source src={msg.video} /></video>}
             {msg.pdf && (
-              <a
-                href={msg.pdf}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginTop: 6, display: 'block', color: msg.autor === 'idoso' ? '#fff' : '#0C0B55', fontWeight: 'bold' }}
-              >
+              <a href={msg.pdf} target="_blank" rel="noopener noreferrer" style={{ display: 'block', marginTop: 6 }}>
                 📄 Visualizar PDF
               </a>
             )}
@@ -179,18 +146,11 @@ const Chat = () => {
           onChange={(e) => setNovaMensagem(e.target.value)}
           style={styles.input}
         />
-        <input
-          type="file"
-          accept="image/*,video/*,application/pdf"
-          id="uploadArquivo"
-          style={{ display: 'none' }}
-          onChange={handleArquivo}
-        />
-        <label htmlFor="uploadArquivo" style={styles.enviarIcone}>
-          <FiPlus size={20} />
-        </label>
+        <input type="file" accept="image/*,video/*,application/pdf" id="uploadArquivo" style={{ display: 'none' }} onChange={handleArquivo} />
+        <label htmlFor="uploadArquivo" style={styles.enviarIcone}><FiPlus size={20} /></label>
         <button onClick={handleEnviar} style={styles.enviar}>Enviar</button>
       </div>
+
       <div style={styles.navBar}>
         <FiHome size={24} color="#0C0B55" />
         <FiMessageSquare size={24} color="#0C0B55" />

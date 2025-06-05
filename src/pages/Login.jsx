@@ -49,7 +49,7 @@ const Login = () => {
         alt="Logo do Aplicativo"
         style={styles.logo}
       />
-      <h1 style={styles.titulo}>Entrar</h1>
+      <h1 style={styles.titulo}>OLD +</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <input
           type="email"
