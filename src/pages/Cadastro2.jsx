@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CuidadorContext } from '../context/CuidadorContext';
+import BotaoVoltar from '../components/BotaoVoltar';
 import '@fontsource/poppins';
 
 
@@ -31,6 +32,7 @@ const Cadastro2 = () => {
 
   return (
     <div style={styles.container}>
+      <BotaoVoltar cor="#98FB98" />
       <img
         src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
         alt="Logo do Aplicativo"

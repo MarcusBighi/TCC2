@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IdosoContext } from '../context/IdosoContext';
 import axios from 'axios';
+import BotaoVoltar from '../components/BotaoVoltar';
 import '@fontsource/poppins';
 
 const CadastroIdoso3 = () => {
@@ -46,7 +47,7 @@ const CadastroIdoso3 = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.titulo}>Cadastro - Etapa 3</h1>
+      <BotaoVoltar cor="#87CEEB" />
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>

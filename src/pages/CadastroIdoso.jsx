@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IdosoContext } from '../context/IdosoContext'; // ✅ Contexto importado
+import BotaoVoltar from '../components/BotaoVoltar';
 import '@fontsource/poppins';
 
 const CadastroIdoso = () => {
@@ -30,6 +31,7 @@ const CadastroIdoso = () => {
 
   return (
     <div style={styles.container}>
+      <BotaoVoltar cor="#87CEEB" />
       <img
         src="https://i.postimg.cc/m2z1j32H/Logo-do-aplicativo.png"
         alt="Logo do Aplicativo"

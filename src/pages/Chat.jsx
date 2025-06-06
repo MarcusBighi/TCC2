@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { FiPhoneCall, FiHome, FiMessageSquare, FiUser, FiPlus } from 'react-icons/fi';
 
 const Chat = () => {
@@ -9,6 +10,7 @@ const Chat = () => {
   const [novaMensagem, setNovaMensagem] = useState('');
   const [cuidador, setCuidador] = useState({});
   const [previewFoto, setPreviewFoto] = useState(null);
+  const navigate = useNavigate();
 
   // Buscar dados do cuidador
   useEffect(() => {
@@ -152,9 +154,9 @@ const Chat = () => {
       </div>
 
       <div style={styles.navBar}>
-        <FiHome size={24} color="#0C0B55" />
-        <FiMessageSquare size={24} color="#0C0B55" />
-        <FiUser size={24} color="#0C0B55" />
+        <FiHome size={24} onClick={() => navigate('/home')}/>
+        <FiMessageSquare size={24} onClick={() => navigate('/historicoChatIdoso')} />
+        <FiUser size={24} onClick={() => navigate('/perfilIdoso')} />
       </div>
     </div>
   );

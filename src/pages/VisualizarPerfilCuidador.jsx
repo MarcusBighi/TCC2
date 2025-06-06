@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaFolder } from 'react-icons/fa';
 import { CuidadorContext } from '../context/CuidadorContext';
+import BotaoVoltar from '../components/BotaoVoltar';
 
 const VisualizarPerfilCuidador = () => {
   const { atualizarDadosCuidador } = useContext(CuidadorContext);
@@ -24,6 +25,7 @@ const VisualizarPerfilCuidador = () => {
 
   return (
     <div style={styles.container}>
+      <BotaoVoltar cor="#98FB98" />
       <div style={styles.card}>
         <h1 style={styles.titulo}>Perfil do Cuidador</h1>
 

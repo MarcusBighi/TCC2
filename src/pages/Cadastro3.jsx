@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CuidadorContext } from '../context/CuidadorContext';
 import axios from 'axios';
+import BotaoVoltar from '../components/BotaoVoltar';
 import '@fontsource/poppins';
 
 const Cadastro3 = () => {
@@ -44,6 +45,7 @@ const Cadastro3 = () => {
 
   return (
     <div style={styles.container}>
+      <BotaoVoltar cor="#98FB98" />
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.perfilContainer}>
           <label htmlFor="fotoPerfil" style={styles.perfilLabel}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import BotaoVoltar from '../components/BotaoVoltar';
 import axios from 'axios';
 
 const VisualizarPerfilIdoso = () => {
@@ -27,6 +28,7 @@ const VisualizarPerfilIdoso = () => {
 
   return (
     <div style={styles.container}>
+      <BotaoVoltar cor="#87CEEB" />
       <div style={styles.card}>
         <h1 style={styles.titulo}>Perfil do Idoso</h1>
 
