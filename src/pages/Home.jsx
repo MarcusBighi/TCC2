@@ -77,7 +77,7 @@ const Home = () => {
       <div style={styles.navbar}>
         <FiHome size={24} />
         <FiMessageSquare size={24} onClick={() => navigate('/historicoChatIdoso')} />
-        <FiUser size={24} />
+        <FiUser size={24} onClick={() => navigate('/perfilIdoso')} />
       </div>
     </div>
   );
