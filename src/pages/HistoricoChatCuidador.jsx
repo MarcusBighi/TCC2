@@ -62,7 +62,7 @@ const HistoricoChatCuidador = () => {
       </div>
 
       <div style={styles.navbar}>
-        <FiHome size={24} onClick={() => navigate('/home')} />
+        <FiHome size={24} onClick={() => navigate('/homeIdoso')} />
         <FiMessageSquare size={24} />
         <FiUser size={24} onClick={() => navigate('/perfilCuidador')} />
       </div>
