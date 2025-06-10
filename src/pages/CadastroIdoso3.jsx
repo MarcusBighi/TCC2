@@ -7,40 +7,44 @@ import '@fontsource/poppins';
 
 const CadastroIdoso3 = () => {
   const navigate = useNavigate();
-  const { dadosIdoso, setDadosIdoso } = useContext(IdosoContext);
+  const { dadosIdoso } = useContext(IdosoContext);
 
-  const [fotoPerfil, setFotoPerfil] = useState('');
+  const [fotoPerfil, setFotoPerfil] = useState(null);
   const [desafios, setDesafios] = useState('');
   const [saude, setSaude] = useState('');
   const [arquivosSaude, setArquivosSaude] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData();
-    formData.append('fotoPerfil', fotoPerfil);
+    if (fotoPerfil) {
+      formData.append('fotoPerfil', fotoPerfil); // deve ser um File
+    }
+
     formData.append('desafios', desafios);
     formData.append('observacoes', saude);
-    formData.append('anexos', arquivosSaude); // se quiser enviar também
-  
-    // incluir outros campos do contexto
-    Object.keys(dadosIdoso).forEach(key => {
+
+    arquivosSaude.forEach((arquivo) => {
+      formData.append('anexos', arquivo);
+    });
+
+    Object.keys(dadosIdoso).forEach((key) => {
       formData.append(key, dadosIdoso[key]);
     });
-  
+
     try {
-      await axios.post('http://localhost:5000/api/idosos', formData, {
+      const response = await axios.post('http://localhost:5000/api/idosos', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       const idCriado = response.data.idoso._id;
-      localStorage.setItem('idUsuario', idCriado); // 👈 Salva o ID no localStorage
-
+      localStorage.setItem('idUsuario', idCriado);
 
       alert("Cadastro do idoso finalizado com sucesso!");
       navigate('/PerfilIdoso');
     } catch (error) {
-      console.error("Erro ao enviar dados do idoso:", error);
+      console.error("Erro ao enviar dados do idoso:", error.response?.data || error.message);
       alert("Erro ao finalizar cadastro.");
     }
   };
@@ -86,7 +90,7 @@ const CadastroIdoso3 = () => {
           type="file"
           accept=".pdf,.doc,.docx"
           multiple
-          onChange={(e) => setArquivosSaude(e.target.files)}
+          onChange={(e) => setArquivosSaude(Array.from(e.target.files))}
           style={styles.inputArquivo}
         />
 

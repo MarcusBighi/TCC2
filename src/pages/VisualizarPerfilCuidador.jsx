@@ -19,9 +19,14 @@ const VisualizarPerfilCuidador = () => {
   }, [cuidador]);
 
   const irParaChat = () => {
-    localStorage.setItem('dadosCuidador', JSON.stringify(cuidador));
-    navigate('/chat');
-  };
+  if (!cuidador || !cuidador._id) {
+    alert("ID do cuidador não encontrado.");
+    return;
+  }
+
+  localStorage.setItem('dadosCuidador', JSON.stringify(cuidador));
+  navigate(`/chat/${cuidador._id}`);
+};
 
   return (
     <div style={styles.container}>
